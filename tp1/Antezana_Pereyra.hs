@@ -10,16 +10,6 @@ destinationP (Pal name_city _) = name_city
 netP :: Palet -> Int
 netP (Pal _ x) = x
 
-module Route(Route, newR, inOrderR) where
-
-data Route = Rou[String] deriving (Eq, Show)
-newR :: [String] -> Route
-newR (list_citys) = Rou [list_citys]
-
-inOrderR :: Route -> String -> String -> Bool
-inOrderR (Rou city1 city2) | head(Rou) == city1 = True
-                           | head(Rou) == city2 = False
-                           | tail(Rou) = inOrderR(Rou city1 city2)
 
 -- module Stack (Stack, newS, freeCellsS, stackS, netS, holdsS, popS) where
 --     data Stack = Sta[Palet] int deriving (Eq, Show)
