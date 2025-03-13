@@ -1,4 +1,4 @@
--- module Truck (Truck, newT, freeCellsT, loadT, unloadT, netT) where
+module Truck ( Truck, newT, freeCellsT, loadT, unloadT, netT ) where
 --     data Truck = Tru[Stack] Route  -> Truck
 --     freeCellsT :: Truck -> int
 --     loadT :: Truck -> Palet -> Truck
