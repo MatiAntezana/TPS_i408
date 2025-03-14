@@ -19,6 +19,7 @@ stackS (Sta list_palet size) palet = Sta (palet : list_palet) size
 
 
 netS :: Stack -> Int
+netS (Sta [] size) = 0
 netS (Sta (first_palet:list_palet) size) | length list_palet == 0 = netP first_palet
                                          | otherwise = netP first_palet + netS (Sta list_palet size)
 

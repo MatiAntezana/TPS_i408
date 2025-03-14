@@ -9,4 +9,3 @@ inOrderR :: Route -> String -> String -> Bool
 inOrderR (Rou (first_element:list_city)) city1 city2 | first_element == city1 = True
                            | first_element == city2 = False
                            | otherwise = inOrderR (Rou (list_city)) city1 city2
-
