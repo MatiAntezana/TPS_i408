@@ -33,6 +33,7 @@ stackS (Sta palets max_palets) palet | length palets < max_palets = Sta (palet :
 -- map netP palets aplica netP a cada Palet de la lista palets, generando una lista de pesos.
 -- sum suma todos los elementos de la lista de pesos.
 netS :: Stack -> Int
+
 netS (Sta palets _) = sum (map netP palets)
 
 

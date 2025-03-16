@@ -17,6 +17,17 @@ data Truck = Tru [Stack] Route deriving (Eq, Show)
 -- Una ruta (Route) que el camión debe seguir.
 -- replicate :: Int -> a -> [a]
 -- Replicate es una función que toma un entero y un elemento, y devuelve una lista con el elemento repetido la cantidad de veces del entero.
+module Truck ( Truck, newT, freeCellsT, netT ) where
+
+import Stack
+import Route
+import Palet
+
+data Truck = Tru [Stack] Route deriving (Eq, Show)
+
+build_list_stack :: Truck -> Int -> Int -> Truck
+build_list_stack (Tru list_stack route_) nro_bahias size | length list_stack == nro_bahias = Tru list_stack route_
+                                                           | otherwise = build_list_stack (Tru (list_stack ++ [newS size])route_) nro_bahias size
 newT :: Int -> Int -> Route -> Truck
 newT nro_bahias altura ruta | nro_bahias <= 0 = error "Error: El camión debe tener al menos una bahía."
                             | altura <= 0 = error "Error: La altura de las bahías debe ser positiva."

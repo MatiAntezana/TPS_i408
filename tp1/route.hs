@@ -23,6 +23,7 @@ newR list_cities | null list_cities = error "Error: La lista de ciudades no pued
 -- elemIndex :: Eq a => a -> [a] -> Maybe Int
 -- elemIndex devuelve Just idx de la primera ocurrencia del elemento en la lista o Nothing si el elemento no está en la lista.
 inOrderR :: Route -> String -> String -> Bool
+
 inOrderR (Rou list_cities) city1 city2 | null city1 || null city2 = error "Error: Ninguna ciudad puede estar vacía."
                                        | not (all isAlpha city1) || not (all isAlpha city2) = error "Error: Los nombres de las ciudades solo pueden contener letras." 
                                        | city1 == city2 = error "Error: Las ciudades no pueden ser iguales."
