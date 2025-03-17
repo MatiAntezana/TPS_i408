@@ -26,7 +26,7 @@ inOrderR :: Route -> String -> String -> Bool
 
 inOrderR (Rou list_cities) city1 city2 | null city1 || null city2 = error "Error: Ninguna ciudad puede estar vacía."
                                        | not (all isAlpha city1) || not (all isAlpha city2) = error "Error: Los nombres de las ciudades solo pueden contener letras." 
-                                       | city1 == city2 = error "Error: Las ciudades no pueden ser iguales."
+                                       | city1 == city2 = True -- Para que me permita poner una ciudad seguida de la otra en la pila cuando son iguales
                                        | Just idx1 <- elemIndex city1 list_cities, Just idx2 <- elemIndex city2 list_cities = idx1 < idx2
                                        | otherwise = False
 

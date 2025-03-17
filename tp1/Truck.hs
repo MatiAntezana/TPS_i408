@@ -1,5 +1,5 @@
 --module Truck ( Truck, newT, freeCellsT, loadT, unloadT, netT ) where
-module Truck (Truck, newT, freeCellsT, loadT) where
+module Truck (Truck, newT, freeCellsT, loadT, netT) where
 
 import Palet
 import Stack
@@ -17,13 +17,6 @@ data Truck = Tru [Stack] Route deriving (Eq, Show)
 -- Una ruta (Route) que el camión debe seguir.
 -- replicate :: Int -> a -> [a]
 -- Replicate es una función que toma un entero y un elemento, y devuelve una lista con el elemento repetido la cantidad de veces del entero.
-module Truck ( Truck, newT, freeCellsT, netT ) where
-
-import Stack
-import Route
-import Palet
-
-data Truck = Tru [Stack] Route deriving (Eq, Show)
 
 build_list_stack :: Truck -> Int -> Int -> Truck
 build_list_stack (Tru list_stack route_) nro_bahias size | length list_stack == nro_bahias = Tru list_stack route_
@@ -40,8 +33,21 @@ freeCellsT :: Truck -> Int
 freeCellsT (Tru stacks _) = sum (map freeCellsS stacks)
 
 
+search_stack :: Truck -> Int -> Palet -> Int
+search_stack (Tru [] route_) idx palet_ = -1
+search_stack (Tru (stack_:list_stack) route_) idx palet_ | holdsS stack_ palet_ route_ == True = idx
+                                                    | otherwise = search_stack (Tru list_stack route_) (idx+1) palet_
+
+update_stack :: [Stack] -> [Stack] -> Int -> Int -> Palet -> [Stack]
+update_stack [] new_list_stack _ _ palet_ = new_list_stack 
+update_stack (stack_:old_list_stack) new_list_stack idx_aim new_idx palet_| idx_aim == new_idx = new_list_stack ++ [(stackS stack_ palet_)] ++ old_list_stack
+                                                        | otherwise = update_stack old_list_stack (new_list_stack ++ [stack_]) idx_aim (new_idx+1) palet_
+
 -- La función loadT debe cargar un palet en el camión, es decir, ubicarlo en alguna de sus bahías (Stack) respetando las restricciones.
 loadT :: Truck -> Palet -> Truck
+loadT (Tru list_stack route_) palet_| inRouteR route_ (destinationP palet_) == False = Tru list_stack route_
+                                                    | search_stack (Tru list_stack route_) 0 palet_ == -1 = Tru [] route_
+                                                    | otherwise = Tru (update_stack list_stack [] (search_stack (Tru list_stack route_) 0 palet_ ) 0 palet_)  route_
 
 
 
