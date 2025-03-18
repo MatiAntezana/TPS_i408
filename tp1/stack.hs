@@ -11,14 +11,13 @@ data Stack = Sta[Palet] Int deriving (Eq, Show)
 
 -- Esta función crea una pila con una capacidad específica. La capacidad se pasa como parámetro, y la pila comienza vacía.
 newS :: Int -> Stack
-newS max_palets | max_palets<= 0 = error "Error: La capacidad de la pila debe ser positiva."
+newS max_palets | max_palets <= 0 = error "Error: La capacidad de la pila debe ser positiva."
                 | otherwise = Sta [] max_palets  
 
 
 -- Devuelve la cantidad de celdas libres en la pila, que será la capacidad restante de la pila.
 freeCellsS :: Stack -> Int
 freeCellsS (Sta palets max_palets) = max_palets - length palets
-
 
 -- Apila un palet en la pila. 
 -- La verificación la hacemos en el camion
@@ -37,12 +36,14 @@ netS (Sta palets _) = sum (map netP palets)
 
 
 -- Esta función debe verificar si un Palet se puede apilar en una Stack, cumpliendo dos condiciones:
--- 1. El peso neto de los palets apilados más el peso del palet a apilar no supera los 10 toneladas.
--- 2. El palet a apilar debe tener un destino anterior o igual al último palet apilado.
+-- 1. La pila tiene espacio para alojar el palet.
+-- 2. El peso neto de los palets apilados más el peso del palet a apilar no supera los 10 toneladas.
+-- 3. El palet a apilar debe tener un destino anterior o igual al último palet apilado.
 -- \p -> inOrderR ruta (destinationP palet) (destinationP p): Función anónima que verifica si el nuevo palet tiene un destino antes o igual que p en ruta.
 
 holdsS :: Stack -> Palet -> Route -> Bool
-holdsS (Sta palets max_capacity) palet ruta | (netS (Sta palets max_capacity) + netP palet) > max_capacity = False -- "Error: El peso total de los palets excede las 10 toneladas."
+holdsS (Sta palets max_capacity) palet ruta | length palets > max_capacity = False -- "Error: No hay espacio suficiente en la pila para apilar el palet."
+                                          | (netS (Sta palets max_capacity) + netP palet) > max_capacity = False -- "Error: El peso total de los palets excede las 10 toneladas."
                                           | not (all (\p -> inOrderR ruta (destinationP palet) (destinationP p)) palets) = False --"Error: El destino del nuevo palet debe ser anterior o igual al último palet apilado."
                                           | otherwise = True  -- Si todo está correcto, se puede apilar el palet
 

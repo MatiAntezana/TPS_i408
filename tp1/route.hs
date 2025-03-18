@@ -10,11 +10,16 @@ data Route = Rou[String] deriving (Eq, Show)
 
 -- Esta función es responsable de crear una nueva ruta a partir de una lista de ciudades.
 -- nub elimina los duplicados de la lista de ciudades.
+
+search_consecutive_duplicates :: Eq a => [a] -> Bool
+search_consecutive_duplicates (x:y:xs) = x == y || search_consecutive_duplicates (y:xs)
+search_consecutive_duplicates _ = False
+
 newR :: [String] -> Route
 newR list_cities | null list_cities = error "Error: La lista de ciudades no puede estar vacía."
                  | any null list_cities = error "Error: Ninguna ciudad en la lista puede estar vacía."
                  | any (not . all isAlpha) list_cities = error "Error: Los nombres de las ciudades en la lista solo pueden contener letras."
-                 | length list_cities /= length (nub list_cities) = error "Error: La lista de ciudades no puede contener duplicados."
+                 | search_consecutive_duplicates list_cities = error "Error: La lista no puede contener ciudades repetidas de forma consecutiva."
                  | otherwise = Rou list_cities
 
 
