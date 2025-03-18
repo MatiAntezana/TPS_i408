@@ -14,7 +14,7 @@ newR :: [String] -> Route
 newR list_cities | null list_cities = error "Error: La lista de ciudades no puede estar vacía."
                  | any null list_cities = error "Error: Ninguna ciudad en la lista puede estar vacía."
                  | any (not . all isAlpha) list_cities = error "Error: Los nombres de las ciudades en la lista solo pueden contener letras."
-                 | length list_cities /= length (nub list_cities) = error "Error: La lista de ciudades no puede contener duplicados."
+                 -- | length list_cities /= length (nub list_cities) = error "Error: La lista de ciudades no puede contener duplicados."
                  | otherwise = Rou list_cities
 
 
@@ -25,7 +25,7 @@ newR list_cities | null list_cities = error "Error: La lista de ciudades no pued
 inOrderR :: Route -> String -> String -> Bool
 inOrderR (Rou list_cities) city1 city2 | null city1 || null city2 = error "Error: Ninguna ciudad puede estar vacía."
                                        | not (all isAlpha city1) || not (all isAlpha city2) = error "Error: Los nombres de las ciudades solo pueden contener letras." 
-                                       | city1 == city2 = error "Error: Las ciudades no pueden ser iguales."
+                                       | city1 == city2 = True -- Para que me permita poner una ciudad seguida de la otra en la pila cuando son iguales
                                        | Just idx1 <- elemIndex city1 list_cities, Just idx2 <- elemIndex city2 list_cities = idx1 < idx2
                                        | otherwise = False
 

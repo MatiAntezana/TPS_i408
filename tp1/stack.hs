@@ -23,8 +23,7 @@ freeCellsS (Sta palets max_palets) = max_palets - length palets
 -- Apila un palet en la pila. 
 -- La pila solo puede aceptar un palet si tiene suficiente espacio para alojarlo. 
 stackS :: Stack -> Palet -> Stack
-stackS (Sta palets max_palets) palet | length palets < max_palets = Sta (palet : palets) max_palets
-                                     | otherwise = error "Error: La pila está llena, no se puede apilar más palets."
+stackS (Sta palets max_palets) palet = Sta (palet : palets) max_palets
 
 
 -- Devuelve el peso neto de los palets apilados, sumando los pesos de todos los palets en la pila.
@@ -36,13 +35,13 @@ netS :: Stack -> Int
 netS (Sta palets _) = sum (map netP palets)
 
 
--- Esta función debe verificar si un Palet se puede apilar en una Stack, cumpliendo dos condiciones:
+-- Esta función debe verificar si un Palet se puede apilar en una Stack, cumpliendo tres condiciones:
 -- 1. La pila tiene espacio para alojar el palet.
 -- 2. El peso neto de los palets apilados más el peso del palet a apilar no supera los 10 toneladas.
 -- 3. El palet a apilar debe tener un destino anterior o igual al último palet apilado.
 -- \p -> inOrderR ruta (destinationP palet) (destinationP p): Función anónima que verifica si el nuevo palet tiene un destino antes o igual que p en ruta.
 holdsS :: Stack -> Palet -> Route -> Bool
-holdsS (Sta palets max_palets) palet ruta | length palets > max_palets = error "Error: No hay espacio suficiente en la pila para apilar el palet."
+holdsS (Sta palets max_palets) palet ruta | freeCellsS (Sta palets max_palets) <=0 = error "Error: No hay espacio suficiente en la pila para apilar el palet."
                                           | (netS (Sta palets max_palets) + netP palet) > 10 = error "Error: El peso total de los palets excede las 10 toneladas."
                                           | not (all (\p -> inOrderR ruta (destinationP palet) (destinationP p)) palets) = error "Error: El destino del nuevo palet debe ser anterior o igual al último palet apilado."
                                           | otherwise = True  -- Si todo está correcto, se puede apilar el palet
@@ -52,6 +51,15 @@ holdsS (Sta palets max_palets) palet ruta | length palets > max_palets = error "
 -- filter :: (a -> Bool) -> [a] -> [a]
 -- Filter es una función que toma una función booleana y una lista, y devuelve una nueva lista con los elementos que cumplen la condición.
 -- destinationP p /= destination_city: Función anónima que verifica si el destino de un palet es diferente al destino de la ciudad.
+
+-- VERRRR
+-- popS :: Stack -> String -> Stack
+-- popS (Sta palets max_palets) destination_city | null palets = error "Error: La pila está vacía, no se puede realizar la operación."
+--                                               | not (any (\p -> destinationP p == destination_city) palets) = error "Error: No hay palets con destino a la ciudad."
+--                                               | otherwise = Sta (filter (\p -> destinationP p /= destination_city) palets) max_palets
+
+
 popS :: Stack -> String -> Stack
 popS (Sta palets max_palets) destination_city | null palets = error "Error: La pila está vacía, no se puede realizar la operación."
-                                              | otherwise = Sta (filter (\p -> destinationP p /= destination_city) palets) max_palets
+                                              | not (any (\p -> destinationP p == destination_city) palets) = error "Error: No hay palets con destino a la ciudad."
+                                              | otherwise = Sta [p | p <- palets, destinationP p /= destination_city] max_palets
