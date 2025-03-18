@@ -46,7 +46,7 @@ update_stack (stack_:old_list_stack) new_list_stack idx_aim new_idx palet_| idx_
 -- La función loadT debe cargar un palet en el camión, es decir, ubicarlo en alguna de sus bahías (Stack) respetando las restricciones.
 loadT :: Truck -> Palet -> Truck
 loadT (Tru list_stack route_) palet_| inRouteR route_ (destinationP palet_) == False = Tru list_stack route_
-                                                    | search_stack (Tru list_stack route_) 0 palet_ == -1 = Tru [] route_
+                                                    | search_stack (Tru list_stack route_) 0 palet_ == -1 = Tru list_stack route_
                                                     | otherwise = Tru (update_stack list_stack [] (search_stack (Tru list_stack route_) 0 palet_ ) 0 palet_)  route_
 
 
