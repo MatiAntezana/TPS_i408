@@ -11,7 +11,7 @@ data Stack = Sta[Palet] Int deriving (Eq, Show)
 
 -- Esta función crea una pila con una capacidad específica. La capacidad se pasa como parámetro, y la pila comienza vacía.
 newS :: Int -> Stack
-newS max_palets | max_palets<= 0 = error "Error: La capacidad de la pila debe ser positiva."
+newS max_palets | max_palets <= 0 = error "Error: La capacidad de la pila debe ser positiva."
                 | otherwise = Sta [] max_palets  
 
 
@@ -19,9 +19,8 @@ newS max_palets | max_palets<= 0 = error "Error: La capacidad de la pila debe se
 freeCellsS :: Stack -> Int
 freeCellsS (Sta palets max_palets) = max_palets - length palets
 
-
 -- Apila un palet en la pila. 
--- La pila solo puede aceptar un palet si tiene suficiente espacio para alojarlo. 
+-- La verificación la hacemos en el camion
 stackS :: Stack -> Palet -> Stack
 stackS (Sta palets max_palets) palet = Sta (palet : palets) max_palets
 
@@ -57,7 +56,6 @@ holdsS (Sta palets max_palets) palet ruta | freeCellsS (Sta palets max_palets) <
 -- popS (Sta palets max_palets) destination_city | null palets = error "Error: La pila está vacía, no se puede realizar la operación."
 --                                               | not (any (\p -> destinationP p == destination_city) palets) = error "Error: No hay palets con destino a la ciudad."
 --                                               | otherwise = Sta (filter (\p -> destinationP p /= destination_city) palets) max_palets
-
 
 popS :: Stack -> String -> Stack
 popS (Sta palets max_palets) destination_city | null palets = error "Error: La pila está vacía, no se puede realizar la operación."

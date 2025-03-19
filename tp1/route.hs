@@ -8,13 +8,19 @@ import Data.List (elemIndex, nub)
 data Route = Rou[String] deriving (Eq, Show)
 
 
+
+searchConsecutiveDuplicates :: Eq a => [a] -> Bool
+searchConsecutiveDuplicates (x:y:xs) = x == y || searchConsecutiveDuplicates (y:xs)
+searchConsecutiveDuplicates _ = False
+
+
 -- Esta función es responsable de crear una nueva ruta a partir de una lista de ciudades.
 -- nub elimina los duplicados de la lista de ciudades.
 newR :: [String] -> Route
 newR list_cities | null list_cities = error "Error: La lista de ciudades no puede estar vacía."
                  | any null list_cities = error "Error: Ninguna ciudad en la lista puede estar vacía."
                  | any (not . all isAlpha) list_cities = error "Error: Los nombres de las ciudades en la lista solo pueden contener letras."
-                 -- | length list_cities /= length (nub list_cities) = error "Error: La lista de ciudades no puede contener duplicados."
+                 | searchConsecutiveDuplicates list_cities = error "Error: La lista no puede contener ciudades repetidas de forma consecutiva."
                  | otherwise = Rou list_cities
 
 
@@ -33,11 +39,11 @@ inOrderR (Rou list_cities) city1 city2 | null city1 || null city2 = error "Error
 -- Esta función toma una ruta y una ciudad y devuelve True si la ciudad se encuentra en la ruta.
 -- elem :: (Foldable t, Eq a) => a -> t a -> Bool
 -- Devuelve True si un elemento está en una lista.
+
 inRouteR :: Route -> String -> Bool
 inRouteR (Rou list_cities) city | null city = error "Error: La ciudad no puede estar vacía."
                                 | not (all isAlpha city) = error "Error: El nombre de la ciudad solo puede contener letras."
                                 | otherwise = city `elem` list_cities
-
 
 
 -- Preguntas: ---------------------------------------------------------------------
