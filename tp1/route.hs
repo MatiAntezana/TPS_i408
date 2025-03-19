@@ -28,7 +28,6 @@ newR list_cities | null list_cities = error "Error: La lista de ciudades no pued
 -- elemIndex :: Eq a => a -> [a] -> Maybe Int
 -- elemIndex devuelve Just idx de la primera ocurrencia del elemento en la lista o Nothing si el elemento no está en la lista.
 inOrderR :: Route -> String -> String -> Bool
-
 inOrderR (Rou list_cities) city1 city2 | null city1 || null city2 = error "Error: Ninguna ciudad puede estar vacía."
                                        | not (all isAlpha city1) || not (all isAlpha city2) = error "Error: Los nombres de las ciudades solo pueden contener letras." 
                                        | city1 == city2 = True -- Para que me permita poner una ciudad seguida de la otra en la pila cuando son iguales
@@ -39,11 +38,11 @@ inOrderR (Rou list_cities) city1 city2 | null city1 || null city2 = error "Error
 -- Esta función toma una ruta y una ciudad y devuelve True si la ciudad se encuentra en la ruta.
 -- elem :: (Foldable t, Eq a) => a -> t a -> Bool
 -- Devuelve True si un elemento está en una lista.
+
 inRouteR :: Route -> String -> Bool
 inRouteR (Rou list_cities) city | null city = error "Error: La ciudad no puede estar vacía."
                                 | not (all isAlpha city) = error "Error: El nombre de la ciudad solo puede contener letras."
                                 | otherwise = city `elem` list_cities
-
 
 
 -- Preguntas: ---------------------------------------------------------------------

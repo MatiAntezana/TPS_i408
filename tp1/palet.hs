@@ -16,7 +16,7 @@ newP :: String -> Int -> Palet
 newP city weight | null city = error "Error: el destino no puede estar vacío."
                  | not (all isAlpha city) = error "Error: el destino solo puede contener letras."
                  | weight <= 0    = error "Error: el peso debe ser mayor a 0."
-                 | otherwise    = Pal city weight
+                 | otherwise = Pal city weight
 
 
 -- Esta función toma un palet y devuelve el nombre de la ciudad de destino del palet. 
