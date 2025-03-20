@@ -41,16 +41,24 @@ netS (Sta palets _) = sum (map netP palets)
 -- \p -> inOrderR ruta (destinationP palet) (destinationP p): Función anónima que verifica si el nuevo palet tiene un destino antes o igual que p en ruta.
 
 holdsS :: Stack -> Palet -> Route -> Bool
-holdsS (Sta palets max_capacity) palet ruta | freeCellsS (Sta palets max_capacity) <=0 = False
-                                          | (netS (Sta palets max_capacity) + netP palet) > max_capacity = False -- "Error: El peso total de los palets excede las 10 toneladas."
-                                          | not (all (\p -> inOrderR ruta (destinationP palet) (destinationP p)) palets) = False --"Error: El destino del nuevo palet debe ser anterior o igual al último palet apilado."
+holdsS (Sta palets max_palets) palet ruta | freeCellsS (Sta palets max_palets) <=0 = False
+                                          | (netS (Sta palets max_palets) + netP palet) > 10 = False
+                                          | not (all (\p -> inOrderR ruta (destinationP palet) (destinationP p)) palets) = False
                                           | otherwise = True  -- Si todo está correcto, se puede apilar el palet
+
+
+
+-- holdsS :: Stack -> Palet -> Route -> Bool
+-- holdsS (Sta palets max_capacity) palet ruta | freeCellsS (Sta palets max_capacity) <=0 = False
+--                                           | (netS (Sta palets max_capacity) + netP palet) > max_capacity = False -- "Error: El peso total de los palets excede las 10 toneladas."
+--                                           | not (all (\p -> inOrderR ruta (destinationP palet) (destinationP p)) palets) = False --"Error: El destino del nuevo palet debe ser anterior o igual al último palet apilado."
+--                                           | otherwise = True  -- Si todo está correcto, se puede apilar el palet
 
 -- Esta función elimina todos los palets con un destino específico de la pila.
 -- filter :: (a -> Bool) -> [a] -> [a]
 -- Filter es una función que toma una función booleana y una lista, y devuelve una nueva lista con los elementos que cumplen la condición.
 -- destinationP p /= destination_city: Función anónima que verifica si el destino de un palet es diferente al destino de la ciudad.
 popS :: Stack -> String -> Stack
-popS (Sta [] size) _ = Sta [] size
-popS (Sta (first_palet:list_palet) size) city_dest | destinationP first_palet == city_dest = popS (Sta list_palet size) city_dest
-                                                    | otherwise = Sta ([first_palet] ++ list_palet) (size)
+popS (Sta [] max_palets) _ = Sta [] max_palets
+popS (Sta (palet:palets) max_palets) destination_city | destinationP palet == destination_city = popS (Sta palets max_palets) destination_city
+                                                    | otherwise = Sta (palet : palets) max_palets
