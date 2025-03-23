@@ -16,11 +16,15 @@ newT cantStacks maxPalets ruta | cantStacks <= 0 = error "Error: El camión debe
 freeCellsT :: Truck -> Int
 freeCellsT (Tru stacks _) = sum (map freeCellsS stacks)
 
+-- La función busca en qué bahía (stack) del camión se puede apilar el palet respetando holdsS.
+-- Devuelve el índice de la bahía donde se puede apilar el palet.
+-- Si no se puede apilar en ninguna bahía, devuelve -1.
 searchStack :: Truck -> Int -> Palet -> Int
 searchStack (Tru [] route) idx palet = -1
 searchStack (Tru (stack : stacks) route) idx palet | holdsS stack palet route = idx
                                                    | otherwise = searchStack (Tru stacks route) (idx+1) palet
 
+-- La funcicó actualiza el stack correspondiente y devuelve la lista de stack actualizada
 updateStack :: [Stack] -> [Stack] -> Int -> Int -> Palet -> [Stack]
 updateStack [] newStacks _ _ palet = newStacks
 updateStack (stack : oldStacks) newStacks idx_aim new_idx palet | idx_aim == new_idx = newStacks ++ [stackS stack palet] ++ oldStacks
