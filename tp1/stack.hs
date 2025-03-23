@@ -27,3 +27,4 @@ popS :: Stack -> String -> Stack
 popS (Sta [] maxPalets) _ = Sta [] maxPalets
 popS (Sta (palet:palets) maxPalets) destinationCity   | destinationP palet == destinationCity = popS (Sta palets maxPalets) destinationCity
                                                       | otherwise = Sta (palet : palets) maxPalets
+

@@ -14,3 +14,4 @@ destinationP (Pal nameCity _) = nameCity
 
 netP :: Palet -> Int
 netP (Pal _ weight) = weight
+

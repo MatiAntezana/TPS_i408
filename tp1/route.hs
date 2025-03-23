@@ -29,3 +29,4 @@ inRouteR :: Route -> String -> Bool
 inRouteR (Rou listCities) city  | null city = False
                                 | not (all isAlpha city) = False
                                 | otherwise = city `elem` listCities
+
