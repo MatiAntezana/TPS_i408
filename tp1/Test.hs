@@ -174,8 +174,8 @@ testNewP = [
     testF paletWithSpecial,        -- Caso negativo: destino con caracteres especiales
     testF paletZeroWeight,         -- Caso negativo: peso cero debe fallar
     testF paletNegativeWeight,     -- Caso negativo: peso negativo debe fallar
-    not (testF palet1),            -- Caso positivo 
-    not (testF palet2)             -- Caso positivo
+    not (testF palet1),            -- Caso positivo: otro palet valido
+    not (testF palet2)             -- Caso positivo: otro palet valido
     ]
 
 
@@ -285,7 +285,6 @@ testLoadT = [
     testF (loadT truckParisTwoRoma palet2),   -- Caso de destino desordenado debe fallar
     testF (loadT truckOneBay palet5),         -- Sobrecarga de peso (15 > 10) debe fallar
     netT (loadT truckLoaded palet2) == 10,    -- Carga en otra bahía funciona
-    not (testF (loadT truckLoaded palet2)),   -- Carga válida no debe fallar
     netT truckThreeRoma == 15                 -- Carga varias bahías (3 palets "Roma")
     ]
 
@@ -317,6 +316,7 @@ testLoadUnloadCombined = [
 
 test :: [Bool]
 
+-- PARA CORRER CADA UNO POR SEPARADO
 
 --test = testNewR
 --test = testInOrderR
