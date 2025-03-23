@@ -21,7 +21,7 @@ testF action = unsafePerformIO $ do
 
 data Test = Tes()
 
--------------------------------------------------------------------------Test Route------------------------------------------------------------------------
+-------------------------------------------------------------------------Route------------------------------------------------------------------------
 emptyRoute = newR []
 routeWithEmptyCity = newR ["Roma", "", "Paris"] -- Lista con una ciudad vacía
 routeWithNumbers = newR ["Roma", "Paris23", "Londres"] -- Ciudad con números
@@ -31,7 +31,7 @@ routeDuplicateNotConsecutive = newR ["Roma", "Paris", "Roma"] -- Duplicados no c
 routeSmall = newR ["Roma", "Paris"] -- Ruta válida pequeña
 routeMedium = newR ["Roma","Paris","Londres"] -- Ruta válida mediana
 
-------------------------------------------------------------------------Test Palet------------------------------------------------------------------------
+------------------------------------------------------------------------Palet------------------------------------------------------------------------
 
 paletEmptyCity = newP "" 5                  -- Destino vacío (debe fallar)
 paletWithNumbers = newP "Paris23" 5         -- Destino con números (debe fallar)
@@ -47,7 +47,7 @@ palet6 = newP "Roma" 1
 palet7 = newP "Paris" 1
 palet8 = newP "Londres" 1
 
-------------------------------------------------------------------------Test Stack------------------------------------------------------------------------
+------------------------------------------------------------------------Stack------------------------------------------------------------------------
 
 stackInvalid = newS 0                                   -- Capacidad inválida (debe fallar)
 stackNegative = newS (-3)                               -- Capacidad negativa (debe fallar)
@@ -55,7 +55,7 @@ stackSmall = newS 2                                     -- Pila con capacidad 2
 stackFull = stackS (stackS stackSmall palet2) palet1    -- Pila llena (2 palets)
 stackOne = stackS stackSmall palet1                     -- Pila con 1 palet
 
------------------------------------------------------------------------Test Truck------------------------------------------------------------------------
+-----------------------------------------------------------------------Truck------------------------------------------------------------------------
 -- Caso de camión con bahías inválidas (0 bahías)
 truckInvalidBays = newT 0 2 routeSmall
 
