@@ -1,4 +1,3 @@
---module Truck ( Truck, newT, freeCellsT, loadT, unloadT, netT ) where
 module Truck (Truck, newT, freeCellsT, loadT, unloadT, netT) where
 
 import Palet
