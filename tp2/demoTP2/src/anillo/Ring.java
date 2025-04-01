@@ -8,22 +8,12 @@ public class Ring {
     private int pos_actual = -1;
 
     public Ring next() {
-        if (ring_data.isEmpty()) {
-            throw new RuntimeException();
-        } else if (pos_actual - 1 < 0) {
-            pos_actual = ring_data.size() - 1;
-        } else {
-            pos_actual = (pos_actual - 1) % ring_data.size();
-        }
+        pos_actual = (pos_actual - 1 + ring_data.size()) % ring_data.size();
         return this;
     }
 
     public Object current() {
-        if (ring_data.isEmpty()) {
-            throw new RuntimeException();
-        } else if (pos_actual == ring_data.size()) {
-            pos_actual = pos_actual % ring_data.size();
-        }
+        pos_actual = pos_actual % ring_data.size();
         return ring_data.get(pos_actual);
         // Puede ser que se pueda sacar el if
     }
