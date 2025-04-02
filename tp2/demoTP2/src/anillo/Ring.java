@@ -4,37 +4,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Ring {
-    private final List<Object> ring_data = new ArrayList<>();
-    private int pos_actual = -1;
+    private final List<Object> ringData = new ArrayList<>();
+    private int currentPos = -1;
 
     public Ring next() {
-        pos_actual = (pos_actual - 1 + ring_data.size()) % ring_data.size();
+        currentPos = (currentPos - 1 + ringData.size()) % ringData.size();
         return this;
     }
+
 
     public Object current() {
-        pos_actual = pos_actual % ring_data.size();
-        return ring_data.get(pos_actual);
-        // Puede ser que se pueda sacar el if
+        return ringData.get(currentPos);
     }
 
-    public Ring add(Object input) {
-        if (ring_data.isEmpty()) {
-            ring_data.add(input);
-            pos_actual += 1;
-        } else {
-            pos_actual += 1;
-            ring_data.add(pos_actual, input);
-        }
+
+    public Ring add(Object input){
+        ringData.add(++currentPos % (ringData.size() + 1), input);
         return this;
     }
+
 
     public Ring remove() {
-        ring_data.remove(pos_actual);
-        pos_actual -= 1;
-        if (pos_actual < 0) {
-            pos_actual = ring_data.size() - 1;
-        }
+        ringData.remove(currentPos);
+        currentPos = (currentPos - 1 + ringData.size()) % Math.max(1, ringData.size()); //preguntar xq sin condicionales es imposible atajar el caso de que la lista este vacia.
         return this;
     }
+
+
 }
