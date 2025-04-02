@@ -24,12 +24,6 @@ public class Ring {
     }
 
 
-//    public Ring remove() {
-//        ringData.remove(currentPos);
-//        currentPos = (currentPos - 1 + ringData.size()) % Math.max(1, ringData.size()); //preguntar xq sin condicionales es imposible atajar el caso de que la lista este vacia.
-//        return this;
-//    }
-
     public Ring remove() {
         ringData.remove(currentPos);
         return ringData.isEmpty() ? this : next();
