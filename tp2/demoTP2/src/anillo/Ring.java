@@ -28,7 +28,7 @@ public class Ring {
         Link newLink = new Link( input ); // se crea un nuevo eslabon link con el valor proporcionado.
 
         if (current != null) {
-            current.insertAfter(newLink);
+            current.add(newLink);
         }
         current = newLink;
         return this;
@@ -46,6 +46,7 @@ public class Ring {
         }
         return this;
     }
+
 }
 
 
