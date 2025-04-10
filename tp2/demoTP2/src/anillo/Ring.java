@@ -1,53 +1,43 @@
 package anillo;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import java.util.Stack;
 
 public class Ring {
-    private Link current; // puntero al nodo actual dentro del anillo.
+    private Link current;
+    Stack<Link> stack = new Stack<>();
+
+    public Ring(){
+        current = new NullObjectPacket();
+        stack.push(current);
+    }
 
     public Ring next() {
+        stack.peek().accion();
         current = current.getPrevious();
         return this;
     }
 
-
     public Object current() {
-        emptyRingException();
+        stack.peek().accion();
         return current.getData();
     }
 
-
-    private void emptyRingException() {
-        if (current == null) throw new RuntimeException("Empty ring");
-    }
-
-
     public Ring add( Object input ) {
-        Link newLink = new Link( input ); // se crea un nuevo eslabon link con el valor proporcionado.
-
-        if (current != null) {
-            current.add(newLink);
-        }
-        current = newLink;
+        True_Eslabon new_eslabon = new True_Eslabon(input);
+        current.Insert(new_eslabon);
+        current = new_eslabon;
+        stack.push(current);
         return this;
     }
 
-
     public Ring remove() {
-        emptyRingException();
-        if (current.getPrevious() == current) {
-            current = null;
-        } else {
-            Link toRemove = current;
-            current = current.getPrevious();
-            toRemove.remove();
-        }
+        Link toRemove = current;
+        current = current.getPrevious();
+        stack.pop();
         return this;
     }
 
 }
+
 
 
 //public class Ring {
