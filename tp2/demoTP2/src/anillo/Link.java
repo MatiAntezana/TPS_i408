@@ -7,7 +7,6 @@ public abstract class Link {
     public abstract Link getPrevious();
     public abstract void accion();
     public abstract void Insert(Link new_eslabon);
-    public abstract void Remove();
 }
 class NullObjectPacket extends Link {
     public NullObjectPacket() {
@@ -31,13 +30,6 @@ class NullObjectPacket extends Link {
         new_eslabon.previous = new_eslabon;
         this.next = new_eslabon;
     }
-
-
-    @Override
-    public void Remove() {
-        throw new RuntimeException("Empty ring");
-        // El NullObject no se debería remover nunca
-    }
 }
 
 class True_Eslabon extends Link {
@@ -56,11 +48,6 @@ class True_Eslabon extends Link {
         this.next.previous = new_eslabon;
         this.next = new_eslabon;
     }
-    public void Remove() {
-        this.previous.next = this.next;
-        this.next.previous = this.previous;
-    }
-
 
 }
 /*
