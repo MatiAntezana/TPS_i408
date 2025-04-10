@@ -30,7 +30,6 @@ public class Ring {
     }
 
     public Ring remove() {
-        Link toRemove = current;
         current = current.getPrevious();
         stack.pop();
         return this;
