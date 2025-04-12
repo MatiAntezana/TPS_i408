@@ -2,41 +2,44 @@ package anillo;
 import java.util.Stack;
 
 public class Ring {
-    private Link current;
-    Stack<Link> stack = new Stack<>();
+    private RingElement current;
+    private final Stack <RingElement> stackTypeElementRing = new Stack<>();
 
     public Ring(){
-        current = new NullObjectPacket();
-        stack.push(current);
+        current = new EmptyRingElement();
+        stackTypeElementRing.push(current);
     }
 
     public Ring next() {
-        stack.peek().accion();
-        current = current.getPrevious();
+        stackTypeElementRing.peek().CheckValidAccion();
+        RingElement headStack = stackTypeElementRing.pop();
+        current = stackTypeElementRing.peek().decideCase(current);
+        current = current.getNext();
+        stackTypeElementRing.push(headStack);
         return this;
     }
 
     public Object current() {
-        stack.peek().accion();
+        stackTypeElementRing.peek().CheckValidAccion();
         return current.getData();
     }
 
     public Ring add( Object input ) {
-        True_Eslabon new_eslabon = new True_Eslabon(input);
-        current.Insert(new_eslabon);
-        current = new_eslabon;
-        stack.push(current);
+        RegularRingEement newElementRing = new RegularRingEement(input);
+        current = current.addNewElementRing(newElementRing);
+        stackTypeElementRing.push(current);
         return this;
     }
 
     public Ring remove() {
-        current = current.getPrevious();
-        stack.pop();
+        stackTypeElementRing.peek().CheckValidAccion();
+        current = current.getPreviousElementRing();
+        stackTypeElementRing.pop();
+        current = stackTypeElementRing.peek().decideCurrent(current);
         return this;
     }
 
 }
-
 
 
 //public class Ring {

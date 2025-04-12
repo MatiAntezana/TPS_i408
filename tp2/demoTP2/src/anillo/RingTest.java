@@ -100,11 +100,19 @@ public class RingTest {
 
     @Test void test13RemoveLast() {
         assertEquals( LocalDate.now(), new Ring().add( "Hola" )
-                                                 .add( new Integer( 42 ) )
-                                                 .add( LocalDate.now() )
-                                                 .next()
-                                                 .next()
-                                                 .remove()
-                                                 .current() );
+                .add( new Integer( 42 ) )
+                .add( LocalDate.now() )
+                .next()
+                .next()
+                .remove()
+                .current() );
+    }
+
+
+    @Test void test_extra() {
+        assertEquals( "Hola", new Ring().add( "Hola" )
+                .add( new Integer( 42 ) )
+                .remove().next()
+                .current() );
     }
 }

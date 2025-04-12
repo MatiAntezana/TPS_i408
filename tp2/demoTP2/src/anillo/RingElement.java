@@ -1,60 +1,73 @@
 package anillo;
-public abstract class Link {
-    protected Link previous, next;
+
+import java.io.ObjectStreamException;
+
+public abstract class RingElement {
+    protected RingElement previous, next;
     protected Object data;
 
     public abstract Object getData();
-    public abstract Link getPrevious();
-    public abstract void action();
-    public abstract void addLink(Link newLink);
-    public abstract Link decideCurrent(Link current);
-    public Link getNext(){return previous;};
-    public abstract Link decideCase(Link current);
+    public abstract RingElement getPreviousElementRing();
+    public abstract void CheckValidAccion();
+    public abstract RingElement addNewElementRing(RingElement newElementRing);
+    public abstract RingElement decideCurrent(RingElement current);
+    public abstract RingElement getNext();
+    public abstract RingElement decideCase(RingElement current);
 }
 
 
-class EmptyRingElement extends Link {
+class EmptyRingElement extends RingElement {
 
     public EmptyRingElement() {
         this.data = null;
         this.previous = this.next = this;
     }
 
-    public Link decideCase(Link current) {
-        current.previous = current;
-        return current;
+    public RingElement getNext() {
+        throw new RuntimeException("Empty ring");
+    }
+
+    public RingElement decideCase(RingElement ringElement) {
+        ringElement.previous = ringElement;
+        return ringElement;
     }
 
     public Object getData() {
         throw new RuntimeException("Empty ring");
     }
 
-    public Link getPrevious() { throw new RuntimeException("Empty ring"); }
-
-    public void action() {
+    public RingElement getPreviousElementRing() {
         throw new RuntimeException("Empty ring");
     }
 
-    public void addLink(Link newLink) {
-        newLink.next = newLink;
-        newLink.previous = newLink;
+    public void CheckValidAccion() {
+        throw new RuntimeException("Empty ring");
     }
 
-    public Link decideCurrent(Link current) {
+    public RingElement addNewElementRing(RingElement newElementRing) {
+        newElementRing.next = newElementRing;
+        newElementRing.previous = newElementRing;
+        return newElementRing;
+    }
+
+    public RingElement decideCurrent(RingElement current) {
         return new EmptyRingElement();
     }
 }
 
 
-class RegularRingEement extends Link {
+class RegularRingEement extends RingElement {
 
     public RegularRingEement(Object data) {
         this.data = data;
         this.previous = null;
         this.next = null;
     }
+    public RingElement getNext() {
+        return previous;
+    }
 
-    public Link decideCase(Link current) {
+    public RingElement decideCase(RingElement current) {
         return current;
     }
 
@@ -62,22 +75,23 @@ class RegularRingEement extends Link {
         return data;
     }
 
-    public Link getPrevious() {
+    public RingElement getPreviousElementRing() {
         this.previous.next = this.next;
         return this.previous;
     }
 
-    public void action() {
+    public void CheckValidAccion() {
     }
 
-    public void addLink(Link newLink) {
-        newLink.next = this.next;
-        newLink.previous = this;
-        this.next.previous = newLink;
-        this.next = newLink;
+    public RingElement addNewElementRing(RingElement newElementRing) {
+        newElementRing.next = this.next;
+        newElementRing.previous = this;
+        this.next.previous = newElementRing;
+        this.next = newElementRing;
+        return newElementRing;
     }
 
-    public Link decideCurrent(Link current) {
+    public RingElement decideCurrent(RingElement current) {
         return current;
     }
 }
