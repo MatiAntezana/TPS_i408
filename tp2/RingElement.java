@@ -5,8 +5,7 @@ public abstract class RingElement {
     protected Object data;
 
     public abstract Object getData();
-    public abstract RingElement removeNewElementRing();
-    public abstract void checkValidAction();
+    public abstract RingElement removeElementRing();
     public abstract RingElement addNewElementRing(RingElement newElementRing);
     public abstract RingElement decideCurrent(RingElement current);
     public abstract RingElement getPrevious();
@@ -14,17 +13,18 @@ public abstract class RingElement {
 
 
 class EmptyRingElement extends RingElement {
+    private static String CurrentRingElementInEmptyRing = "Error. The ring element cannot be accessed because the ring is empty.";
+    private static String GetPreviousRingElementInEmptyRing = "Error. The previous ring element cannot be accessed because the ring is empty.";
+    private static String RemoveRingElementInEmptyRing = "Error. Cannot remove a ring element in an empty ring.";
 
     public EmptyRingElement() {
         this.data = null;
         this.previous = this.next = this;
     }
 
-    public Object getData() {throw new RuntimeException("Empty ring");}
+    public Object getData() {throw new RuntimeException(CurrentRingElementInEmptyRing);}
 
-    public RingElement removeNewElementRing() {throw new RuntimeException("Empty ring");}
-
-    public void checkValidAction() {throw new RuntimeException("Empty ring");}
+    public RingElement removeElementRing() {throw new RuntimeException(RemoveRingElementInEmptyRing);}
 
     public RingElement addNewElementRing(RingElement newElementRing) {
         newElementRing.next = newElementRing;
@@ -34,7 +34,7 @@ class EmptyRingElement extends RingElement {
 
     public RingElement decideCurrent(RingElement current) {return new EmptyRingElement();}
 
-    public RingElement getPrevious() {throw new RuntimeException("Empty ring");}
+    public RingElement getPrevious() {throw new RuntimeException(GetPreviousRingElementInEmptyRing);}
 
 }
 
@@ -49,7 +49,7 @@ class LoadedRingElement extends RingElement {
 
     public Object getData() {return data;}
 
-    public RingElement removeNewElementRing() {
+    public RingElement removeElementRing() {
         this.previous.next = this.next;
         this.next.previous = this.previous;
         RingElement temp = this.previous;
@@ -57,8 +57,6 @@ class LoadedRingElement extends RingElement {
         this.previous = null;
         return temp;
     }
-
-    public void checkValidAction() {}
 
     public RingElement addNewElementRing(RingElement newElementRing) {
         newElementRing.next = this.next;
