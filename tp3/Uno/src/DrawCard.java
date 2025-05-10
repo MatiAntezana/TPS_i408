@@ -1,5 +1,5 @@
-public class CardDraw extends NonWildCard{
-    public CardDraw(String ColorCard){
+public class DrawCard extends NonWildCard{
+    public DrawCard(String ColorCard){
         super(ColorCard);
     }
 }

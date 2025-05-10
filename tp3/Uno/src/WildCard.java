@@ -1,4 +1,3 @@
-package PACKAGE_NAME;
-
-public class WildCard {
+class WildCard extends Card {
+    public WildCard() {}
 }

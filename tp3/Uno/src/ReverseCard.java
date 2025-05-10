@@ -1,5 +1,5 @@
-public class CardReverse extends NonWildCard{
-    public CardReverse(String ColorCard) {
+public class ReverseCard extends NonWildCard{
+    public ReverseCard(String ColorCard) {
         super(ColorCard);
     }
 }

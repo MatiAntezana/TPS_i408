@@ -1,5 +1,5 @@
-public class CardSkip extends NonWildCard{
-    public CardSkip(String ColorCard) {
+public class SkipCard extends NonWildCard{
+    public SkipCard(String ColorCard) {
         super(ColorCard);
     }
 }

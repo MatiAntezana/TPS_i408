@@ -1,4 +1,6 @@
-package PACKAGE_NAME;
+abstract class NonWildCard extends Card {
+    protected String color;
 
-public class NonWildCard {
+    public NonWildCard(String color) { this.color = color; }
+    public String getColor() { return this.color; }
 }
