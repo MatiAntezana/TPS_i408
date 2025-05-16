@@ -2,60 +2,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Stack;
-
-//public class GameTest {
-//
-//    private Player player1;
-//    private Player player2;
-//    private Game game;
-//
-//    @BeforeEach
-//    public void setUp() {
-//        player1 = new PlayerBuilder()
-//                .withId(1)
-//                .addNumberedCard("red", 5)
-//                .addSkipCard("blue")
-//                .build();
-//
-//        player 2 = new PlayerBuilder()
-//                .withId(2)
-//                .addWildCard()
-//                .build();
-//
-//        game = new Game(player1, player2);
-//    }
-//
-//    @Test
-//    public void testCannotCreateGameWithoutPlayers() {
-//        assertThrows(IllegalArgumentException.class, Game::new);
-//    }
-//
-//    @Test
-//    public void testCannotCreatePlayerWithoutCards() {
-//        assertThrows(IllegalArgumentException.class, () -> new Player(10, List.of()));
-//    }
-//
-//    @Test
-//    public void testGameIsCreatedWithPlayersHavingCards() {
-//        List<Player> players = game.getPlayers();
-//        assertTrue(players.contains(player1));
-//        assertTrue(players.contains(player2));
-//    }
-//
-//    @Test
-//    public void testFirstPlayerIsCurrentPlayer() {
-//        Player current = game.getCurrentPlayer();
-//        assertEquals(player1, current);
-//    }
-//
-//
-//}
-
 
 public class GameTest {
 
@@ -63,83 +13,93 @@ public class GameTest {
     private Integer cantCardsPlayer = 1;
     private Integer cantPlayers = 4;
     private List<Card> SimpleDeck;
-    private List<Card> cardsNumRed;
-    private List<Card> cardsNumBlue;
-    private List<Card> cardsNumYellow;
-    private List<Card> cardsNumGreen;
+    private List<Card> numberedRedCards;
+    private List<Card> numberedBlueCards;
+    private List<Card> numberedYellowCards;
+    private List<Card> numberedGreenCards;
 
-    private List<Card> cardsSkip;
-    private List<Card> cardsDraw2;
-    private List<Card> cardsReverse;
-    private WildCard wildCard;
+    private List<Card> skipCards;
+    private List<Card> draw2Cards;
+    private List<Card> reverseCards;
+    private Card wildCard;
 
     // Messages Exception
     private String expectedMessage = "No puedes jugar esa carta";
 
     @BeforeEach
     public void setUp() {
-        BuildMazo constructMazo = new BuildMazo();
-        cardsNumRed = constructMazo.createCardsColor("Red");
-        cardsNumBlue = constructMazo.createCardsColor("Blue");
-        cardsNumYellow = constructMazo.createCardsColor("Yellow");
-        cardsNumGreen = constructMazo.createCardsColor("Green");
+        BuildDeckOfCards deckOfCards = new BuildDeckOfCards();
+        numberedRedCards = deckOfCards.createNumberedCards("Red");
+        numberedBlueCards = deckOfCards.createNumberedCards("Blue");
+        numberedYellowCards = deckOfCards.createNumberedCards("Yellow");
+        numberedGreenCards = deckOfCards.createNumberedCards("Green");
 
-        cardsSkip = constructMazo.createCardsSkip("Red", "Blue", "Yellow", "Green");
-        cardsDraw2 = constructMazo.createCardsDraw2("Red", "Blue", "Yellow", "Green");
-        cardsReverse = constructMazo.createCardsReverse("Red", "Blue", "Yellow", "Green");
+        skipCards = deckOfCards.createSkipCards("Red", "Blue", "Yellow", "Green");
+        draw2Cards = deckOfCards.createDraw2Cards("Red", "Blue", "Yellow", "Green");
+        reverseCards = deckOfCards.createReverseCards("Red", "Blue", "Yellow", "Green");
 
 
-        wildCard = new WildCard();
+        wildCard = deckOfCards.createWildCard();
 
-        SimpleDeck = new ArrayList<>(Arrays.asList(cardsNumRed.get(0), cardsNumRed.get(1), cardsNumRed.get(2),
-                cardsNumBlue.get(1), cardsNumBlue.get(2),
-                wildCard, cardsSkip.get(0), cardsDraw2.get(1), cardsDraw2.get(0), cardsSkip.get(2), wildCard));
+        SimpleDeck = new ArrayList<>(Arrays.asList(numberedRedCards.get(0), numberedRedCards.get(1), numberedRedCards.get(2),
+                numberedBlueCards.get(1), numberedBlueCards.get(2),
+                wildCard, skipCards.get(0), draw2Cards.get(1), draw2Cards.get(0), skipCards.get(2), wildCard));
         // Red0, red1, red2, blue1, blue2, wild, skipRed, drawblue, drawRed, skipYellow, wild
     }
 
+    //Deberíamos testear si se puede crear un juego vació?
 
     @Test
-    public void testCorrectInitializePlayers(){
+    public void testPlayersAreCorrectlyAddedToGame(){
         Game game = new Game(SimpleDeck, 2, "Pedro", "Juan","Mati","Juli");
-        assertTrue(game.getCantCardsPlayer("Pedro"));
-        assertTrue(game.getCantCardsPlayer("Juan"));
-        assertTrue(game.getCantCardsPlayer("Mati"));
-        assertTrue(game.getCantCardsPlayer("Juli"));
 
-        assertFalse(game.getCantCardsPlayer("Tadeo"));
+        assertTrue(game.isPlayerInGame("Pedro"));
+        assertTrue(game.isPlayerInGame("Juan"));
+        assertTrue(game.isPlayerInGame("Mati"));
+        assertTrue(game.isPlayerInGame("Juli"));
+
+        assertFalse(game.isPlayerInGame("Tadeo"));
     }
+
 
     @Test
-    public void testCheckCorrectWellCard(){
+    public void testInitialPitCardIsFirstCardInDeck(){
         Game game = new Game(SimpleDeck, 2, "Pedro", "Juan","Mati","Juli");
-        assertEquals(game.getWellCard(), cardsNumRed.get(0));
+        assertEquals(game.getPitCard(), numberedRedCards.getFirst());
     }
+
+
+    //------------------------------------------------------------------------------------------------
+
 
     @Test
     public void testCheckCorrectPlayPlayerWithInvalidCard(){
         // Test que prueba que tire excepción si se juega con una no aceptada
         Game game = new Game(SimpleDeck, 2, "Pedro", "Juan","Mati","Juli");
-        game.Play(SimpleDeck.get(1)); // red1
-        assertEquals(game.getWellCard(), SimpleDeck.get(1));
-        game.Play(SimpleDeck.get(3)); // blue1
-        assertEquals(game.getWellCard(), SimpleDeck.get(3));
-        game.Play(wildCard.selectColor("Red")); // wild
-        assertEquals(game.getWellCard(), wildCard);
+        Card red1 = new NumberedCard("Red",1);
+        game.play(red1); // red1
+        assertEquals(game.getPitCard(), red1);
+        Card blue1 = new NumberedCard("Blue",1);
+        game.play(blue1); // blue1
+        assertEquals(game.getPitCard(), blue1);
+        game.play(((WildCard) wildCard).asRed());
+        assertEquals(game.getPitCard(), wildCard);
 
-        Exception exception = assertThrows(Exception.class, () -> game.Play(SimpleDeck.get(7)));
+        Exception exception = assertThrows(Exception.class, () -> game.play(new Draw2Card("Blue")));
         assertEquals(expectedMessage, exception.getMessage());
     }
+
 
     @Test
     public void testCheckCorrectPlayPlayerWithCorrectsCards(){
         // Test que prueba que tire excepción si se juega con una no aceptada
         Game game = new Game(SimpleDeck, 2, "Pedro", "Juan","Mati","Juli");
-        game.Play(SimpleDeck.get(1)); // red1
-        game.Play(SimpleDeck.get(3)); // blue1
-        game.Play(wildCard.selectColor("Red")); // wild
-        game.Play(SimpleDeck.get(8)); // drawRed
+        game.play(SimpleDeck.get(1)); // red1
+        game.play(SimpleDeck.get(3)); // blue1
+        game.play(((WildCard) wildCard).asRed()); // wild
+        game.play(SimpleDeck.get(8)); // drawRed
 
-        assertEquals(game.getWellCard(), SimpleDeck.get(8));
+        assertEquals(game.getPitCard(), SimpleDeck.get(8));
     }
 
 
