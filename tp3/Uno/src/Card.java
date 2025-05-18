@@ -1,16 +1,24 @@
 public abstract class Card {
+    public Card (){TypeActionGame = new ActionPlayPenalality();}
+    private ActionsUno TypeActionGame;
     public abstract boolean acceptsCard(Card cardInHand);
     protected boolean likesType(Card cardInHand) { return false; }
     protected boolean likesColor(String aColor) { return false; }
     protected boolean likesNumber(int aNumber) { return false; }
     public abstract void applyEffect(Game game);
+    public Card Uno(){
+        TypeActionGame = new ActionPlayNormal();
+        return this;
+    }
+    public void CheckSayUno(Game game, Player player){
+        TypeActionGame.playAction(game, player);
+    }
 }
 
 
 class WildCard extends Card {
+    public WildCard() {super();}
     private String selectedColor;
-
-    public String getSelectedColor() { return selectedColor; }
 
     public WildCard asRed() { this.selectedColor = "Red"; return this; } // debería ser así o devolver una ColoredCard
     public WildCard asBlue() { this.selectedColor = "Blue"; return this; }
@@ -27,7 +35,10 @@ class WildCard extends Card {
 abstract class ColoredCard extends Card {
     protected String color;
 
-    public ColoredCard(String color) { this.color = color; }
+    public ColoredCard(String color) {
+        super();
+        this.color = color;
+    }
     public String getColor() { return color; }
     protected boolean likesColor( String aColor ) { return color.equals( aColor ); }
 }

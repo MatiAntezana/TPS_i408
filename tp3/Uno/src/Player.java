@@ -46,8 +46,6 @@ public class Player {
     public Player(String nameNewPlayer) {
         name = nameNewPlayer;
         hand = new ArrayList<>();
-        // if (initialHand == null || initialHand.isEmpty()) { throw new IllegalArgumentException("El jugador debe tener cartas."); }
-        // this.hand = new ArrayList<>(initialHand); // Copia defensiva
     }
 
     public void addCard(Card newCard){ hand.add(newCard); }

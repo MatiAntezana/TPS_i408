@@ -14,8 +14,6 @@ public class Game {
         pitCard.applyEffect(this);
     }
 
-
-
     public void initializePlayers(Integer cantCardsPlayer, String... ListPlayers) {
         players = Arrays.stream(ListPlayers)
                 .map(nombre -> {
@@ -28,26 +26,40 @@ public class Game {
                 .collect(Collectors.toList());
     }
 
+    public Integer getCantCardsPlayer(String playerName){
+        return players.stream().filter(p -> p.getName().equals(playerName)).findFirst().get().getCantCards();
+    }
 
     public Boolean isPlayerInGame(String playerName) {
-        return players.stream().anyMatch(player -> player.getName().equals(playerName)); }
-
+        return players.stream().anyMatch(player -> player.getName().equals(playerName));
+    }
 
     public Card getPitCard() { return pitCard; }
 
-
-    public void play(Card cardInHand){
-        if (pitCard.verifyAcceptCard(cardInHand) == false) {
-            throw new IllegalArgumentException("No puedes jugar esa carta");
-        }
-        Player player = players.removeFirst();
-        verifyUno(cardInHand, player);
+    public void playround(Card cardInHand, Player player) {
         player.removeCard(cardInHand);
         players.add(player);
         effects(cardInHand);
     }
 
+    public void play(Card cardInHand){
+        if (pitCard.acceptsCard(cardInHand) == false) {
+            throw new IllegalArgumentException("No puedes jugar esa carta");
+        }
+        Player player = players.removeFirst();
+        playround(cardInHand, player);
+        verifyUno(cardInHand, player);
+    }
+
     private void verifyUno(Card cardInHand, Player player) {
+        if (player.getCantCards() == 1) {
+            cardInHand.CheckSayUno(this, player);
+        }
+    }
+
+    public void Draw2Deck(Player player){
+        player.addCard(deck.removeFirst());
+        player.addCard(deck.removeFirst());
     }
 
     public void Grab(){
@@ -59,8 +71,7 @@ public class Game {
 
     public void playerDraw2() {
         Player player = players.removeFirst();
-        player.addCard(deck.removeFirst());
-        player.addCard(deck.removeFirst());
+        Draw2Deck(player);
         players.add(player);
     }
 
