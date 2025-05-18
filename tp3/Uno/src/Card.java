@@ -3,11 +3,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public abstract class Card {
-    public abstract List<Player> applyEffectPlayer(List<Player> players, List<Card> deck);
-
-    // public abstract void Uno();
-
-    public abstract List<Card> applyEffectDeck(List<Card> deck);
+    private boolean verifyUno;
 
     public boolean compareString(String string1, String string2){
         return string1.equals(string2);
@@ -26,6 +22,12 @@ public abstract class Card {
     }
 
     public abstract boolean matchNumber(Integer number);
+
+    public abstract void applyEffect(Game game);
+
+    // public abstract void Uno(Player player){verifyUno = true;}
+
+    // public boolean CheckUno(){return Uno}
 }
 
 class WildCard extends Card {
@@ -38,24 +40,17 @@ class WildCard extends Card {
         return true;
     }
 
-    public List<Player> applyEffectPlayer(List<Player> players, List<Card> deck){
-        return players;
-    }
-
-    public List<Card> applyEffectDeck(List<Card> deck){
-        return deck;
-    }
-
     public boolean matchNumber(Integer number){
         return false;
     }
+
+    public void applyEffect(Game game){}
 
 }
 
 abstract class ColoredCard extends Card {
     public ColoredCard(String color) { this.color = color; }
 }
-
 
 class NumberedCard extends ColoredCard {
     private Integer number;
@@ -64,6 +59,8 @@ class NumberedCard extends ColoredCard {
         super(color);
         this.number = number;
     }
+
+    public void applyEffect(Game game){}
 
     public boolean matchNumber(Integer numberToVerify){
         return numberToVerify.equals(number);
@@ -74,14 +71,6 @@ class NumberedCard extends ColoredCard {
     }
 
     public int getNumber() { return number; }
-
-    public List<Player> applyEffectPlayer(List<Player> players, List<Card> deck) {
-        return players;
-    }
-
-    public List<Card> applyEffectDeck(List<Card> deck){
-        return deck;
-    }
 
 }
 
@@ -98,18 +87,8 @@ abstract class SpecialCard extends ColoredCard {
 class Draw2Card extends SpecialCard {
     public Draw2Card(String color) { super(color); }
 
-    public List<Player> applyEffectPlayer(List<Player> players, List<Card> deck) {
-        Player player = players.removeFirst();
-        player.addCard(deck.get(0));
-        player.addCard(deck.get(1));
-        players.add(player);
-        return players;
-    }
-
-    public List<Card> applyEffectDeck(List<Card> deck){
-        deck.removeFirst();
-        deck.removeFirst();
-        return deck;
+    public void applyEffect(Game game){
+        game.playerDraw2();
     }
 }
 
@@ -117,32 +96,19 @@ class Draw2Card extends SpecialCard {
 class ReverseCard extends SpecialCard {
     public ReverseCard(String color) { super(color); }
 
-    public List<Player> applyEffectPlayer(List<Player> players, List<Card> deck) {
-        Player player = players.removeFirst();
-        players.reversed();
-        players.add(player);
-        return players;
+    public void applyEffect(Game game){
+        game.reverseRound();
     }
 
-   public List<Card> applyEffectDeck(List<Card> deck){
-        return deck;
-    }
 }
 
 
 class SkipCard extends SpecialCard {
     public SkipCard(String color) { super(color);}
 
-    public List<Player> applyEffectPlayer(List<Player> players, List<Card> deck) {
-        Player player = players.removeFirst();
-        players.add(player);
-        return players;
+    public void applyEffect(Game game){
+        game.skipTurn();
     }
-
-    public List<Card> applyEffectDeck(List<Card> deck){
-        return deck;
-    }
-
 }
 
 

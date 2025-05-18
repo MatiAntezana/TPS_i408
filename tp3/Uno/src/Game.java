@@ -11,7 +11,7 @@ public class Game {
         deck = new LinkedList<>(Deck);
         pitCard = deck.removeFirst();
         initializePlayers(cantCardsPlayer, ListPlayers);
-        applyEffect(pitCard);
+        pitCard.applyEffect(this);
     }
 
 
@@ -41,9 +41,13 @@ public class Game {
             throw new IllegalArgumentException("No puedes jugar esa carta");
         }
         Player player = players.removeFirst();
+        verifyUno(cardInHand, player);
         player.removeCard(cardInHand);
         players.add(player);
         effects(cardInHand);
+    }
+
+    private void verifyUno(Card cardInHand, Player player) {
     }
 
     public void Grab(){
@@ -53,13 +57,26 @@ public class Game {
         players.addFirst(player);
     }
 
-    private void applyEffect(Card CardToPlay){
-        players = CardToPlay.applyEffectPlayer(players, deck);
-        deck = CardToPlay.applyEffectDeck(deck);
+    public void playerDraw2() {
+        Player player = players.removeFirst();
+        player.addCard(deck.removeFirst());
+        player.addCard(deck.removeFirst());
+        players.add(player);
+    }
+
+    public void skipTurn(){
+        Player player = players.removeFirst();
+        players.add(player);
+    }
+
+    public void reverseRound(){
+        Player player = players.removeFirst();
+        players.reversed();
+        players.add(player);
     }
 
     private void effects(Card CardToPlay) {
-        applyEffect(CardToPlay);
+        CardToPlay.applyEffect(this);
         pitCard = CardToPlay;
     }
 }

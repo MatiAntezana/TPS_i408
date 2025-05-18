@@ -94,12 +94,21 @@ public class GameTest {
     public void testCheckCorrectPlayPlayerWithCorrectsCards(){
         // Test que prueba que tire excepción si se juega con una no aceptada
         Game game = new Game(SimpleDeck, 2, "Pedro", "Juan","Mati","Juli");
-        game.play(SimpleDeck.get(1)); // red1
-        game.play(SimpleDeck.get(3)); // blue1
-        game.play(((WildCard) wildCard).asRed()); // wild
-        game.play(SimpleDeck.get(8)); // drawRed
+        game.play(new NumberedCard("Red", 1)); // red1
+        game.play(new NumberedCard("Blue", 1)); // blue1
+        game.play(((WildCard) wildCard).asRed());
+        Draw2Card drawRed = new Draw2Card("Red");// wild
+        game.play(drawRed); // drawRed
+        assertEquals(game.getPitCard(), drawRed);
+    }
+    @Test
+    public void testSayUno(){
+        Game game = new Game(SimpleDeck, 2, "Mati","Juli");
+        game.play(new NumberedCard("Red", 1));
+        game.play(new NumberedCard("Blue", 1));
+        game.play(((WildCard) wildCard).asRed());
+        // Red0, red1, red2, blue1, blue2, wild, skipRed, drawblue, drawRed, skipYellow, wild
 
-        assertEquals(game.getPitCard(), SimpleDeck.get(8));
     }
 
 

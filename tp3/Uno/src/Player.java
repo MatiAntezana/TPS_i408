@@ -59,6 +59,8 @@ public class Player {
         return card;
     }
 
+    public Integer getCantCards(){return hand.size(); }
+
     public void removeCard(Card cardToRemove) {
         hand.remove(cardToRemove);
     }
