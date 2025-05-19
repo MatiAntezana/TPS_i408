@@ -21,6 +21,7 @@ public class GameTest {
     private List<Card> DeckWithDraw2;
     private List<Card> DeckCaseGrab;
     private List<Card> DeckCombinationSpecialCard;
+    private List<Card> DeckrepeatedCards;
 
     private Map<Integer, Card> numberedRedCards;
     private Map<Integer, Card> numberedBlueCards;
@@ -96,6 +97,13 @@ public class GameTest {
                 numberedRedCards.get(3), numberedBlueCards.get(2), numberedYellowCards.get(8), numberedYellowCards.get(2), wildCard, numberedRedCards.get(0),
                 numberedRedCards.get(8), numberedBlueCards.get(1)
                 ));
+
+        DeckrepeatedCards = new ArrayList<>(Arrays.asList(numberedRedCards.get(8),
+                numberedRedCards.get(3), skipCards.get("Red"), draw2Cards.get("Red"), numberedYellowCards.get(3),
+                skipCards.get("Red"), numberedYellowCards.get("Yellow"), numberedBlueCards.get(2), numberedYellowCards.get(9),
+                numberedYellowCards.get(3), numberedRedCards.get(3), draw2Cards.get("Red"), numberedBlueCards.get(8),
+                wildCard, skipCards.get("Yellow"), numberedRedCards.get(1), reverseCards.get("Red"), numberedYellowCards.get(4), numberedYellowCards.get(4)));
+
     }
 
 
@@ -375,6 +383,41 @@ public class GameTest {
 
         assertEquals(wildCard, game.getPitCard());
 
+    }
+
+    @Test
+    public void testPlayCardsrepeated(){
+        Game game = new Game(DeckrepeatedCards, 4, "Mati", "Juan", "Juli");
+
+        // Juega Mati
+        NumberedCard red3 = new NumberedCard("Red", 3);
+        game.play(red3);
+
+        // Juega Juan
+        SkipCard skipRed = new SkipCard("Red");
+        game.play(skipRed);
+
+        assertEquals(skipRed, game.getPitCard());
+        // Se saltea Juli y juega Mati
+
+        game.play(skipRed);
+        assertEquals(skipRed, game.getPitCard());
+        // Se saltea Juan y juega Juli
+
+        game.play(red3);
+
+        // Juega Mati
+        Draw2Card draw2red = new Draw2Card("Red");
+        game.play(draw2red);
+
+        // Mati no canto Uno y tiene 2 más
+        assertEquals(3, game.getCantCardsPlayer("Mati"));
+
+        // Juan agarra 2 y juega Juli
+        assertEquals(draw2red, game.getPitCard());
+
+        game.play(draw2red);
+        assertEquals(draw2red, game.getPitCard());
     }
 
     @Test
