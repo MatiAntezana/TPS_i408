@@ -40,39 +40,31 @@ import java.util.*;
 //}
 
 public class Player {
-    private String name;
-    private List<Card> hand;
+    private final String name;
+    private final List<Card> hand;
 
     public Player(String nameNewPlayer) {
         name = nameNewPlayer;
         hand = new ArrayList<>();
     }
-
+    public List<Card> getHand() {return hand;}
     public void addCard(Card newCard){ hand.add(newCard); }
-
     public String getName(){ return name; }
-
-    public Card playCard(Card card) {
-        hand.remove(card);
-        return card;
-    }
-
-    public Integer getCantCards(){return hand.size(); }
-
+    public Integer getNumberCards(){ return hand.size(); }
     public void removeCard(Card cardToRemove) {
-        hand.remove(cardToRemove);
+        /*Card card = hand.stream()
+                .filter(c -> c.equalsCard(cardToRemove))
+                .findFirst()
+                .get();
+        */
+
+        hand.remove(hand.stream()
+                        .filter(card -> card.equalsCard(cardToRemove))
+                        .findFirst()
+                        .get());
+
+
+        //hand.remove(cardToRemove);
     }
 
-    //public List<Card> getHand() { return hand; }
-
-    //no modelamos el hecho de que si no tiene agarra del mazo y juega, porque le pasamos nosotros la carta desde afuera?
-
-//    public Card drawAndTryPlay(Card drawnCard, Card topDiscard) { /
-//        if (topDiscard.acceptsCard(drawnCard)) {
-//            return drawnCard;
-//        } else {
-//            drawCard(drawnCard);
-//            return null;
-//        }
-//    }
 }
