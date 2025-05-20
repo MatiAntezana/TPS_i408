@@ -16,7 +16,6 @@ public class BuildDeckOfCards {
                 ));
     }
 
-
     public Map<String, Card> createReverseCards(String... colorCards) {
         return Arrays.stream(colorCards)
                 // la clave es el nombre del color, el valor es la nueva ReverseCard

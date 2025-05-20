@@ -7,11 +7,14 @@ public abstract class Card {
     public abstract void applyEffect(Game game);
     public abstract boolean equalsCard(Card cardInHand);
 
-    public ActionsUno TypeActionGame;
-    public Card (){ TypeActionGame = new ActionPlayPenalty(); }
-    public Card Uno(){ TypeActionGame = new ActionPlayNormal(); return this; }
-    public void CheckSayUno(Game game, Player player){ TypeActionGame.playAction(game, player); }
+    private boolean checkUno;
 
+    public Card (){}
+    public Card Uno(){checkUno = true; return this;}
+    public void CheckSayUno(Game game, Player player){}
+
+
+    public boolean CheckVarUno(){return checkUno;}
     public void initialEffect(Game game){}; //Está bien que esto este acá, por mas de que WildCard y NumberCard no tiene efecto?
 }
 

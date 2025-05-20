@@ -22,6 +22,7 @@ public class GameTest {
     private List<Card> DeckCaseGrab;
     private List<Card> DeckCombinationSpecialCard;
     private List<Card> DeckrepeatedCards;
+    private List<Card> DeckSimpleWinPlayer;
 
     private Map<Integer, Card> numberedRedCards;
     private Map<Integer, Card> numberedBlueCards;
@@ -103,6 +104,10 @@ public class GameTest {
                 skipCards.get("Red"), numberedYellowCards.get("Yellow"), numberedBlueCards.get(2), numberedYellowCards.get(9),
                 numberedYellowCards.get(3), numberedRedCards.get(3), draw2Cards.get("Red"), numberedBlueCards.get(8),
                 wildCard, skipCards.get("Yellow"), numberedRedCards.get(1), reverseCards.get("Red"), numberedYellowCards.get(4), numberedYellowCards.get(4)));
+
+        DeckSimpleWinPlayer = new ArrayList<>(Arrays.asList(numberedRedCards.get(0),
+                numberedRedCards.get(1), numberedGreenCards.get(1),
+                numberedBlueCards.get(1), numberedGreenCards.get(3), numberedBlueCards.get(3)));
 
     }
 
@@ -290,7 +295,6 @@ public class GameTest {
     public void testWithDraw2Card(){
         Game game = new Game(DeckWithDraw2, 5, "Mati", "Juli");
         // Mati tiene 7 cartas debido a que tuvo que agarrar por Draw2 del pozo
-        System.out.println(game.deck.getFirst());
         assertEquals(7, game.getCantCardsPlayer("Mati"));
 
         // Juega Juli
@@ -433,6 +437,26 @@ public class GameTest {
         Game game = new Game(SimpleDeck, 2, "Mati", "Juli");
         game.play( new NumberedCard("Red",1));
         assertEquals(3, game.getCantCardsPlayer("Mati"));
+    }
+
+    @Test
+    public void testWinPlayer() {
+        Game game = new Game(DeckSimpleWinPlayer, 2, "Mati", "Juli");
+        game.play( new NumberedCard("Red",1).Uno());
+        assertEquals(1, game.getCantCardsPlayer("Mati"));
+        game.play( new NumberedCard("Blue",1).Uno());
+        assertEquals(1, game.getCantCardsPlayer("Juli"));
+        game.play( new NumberedCard("Green",1));
+
+        // Ganó Mati
+        assertEquals(0, game.getCantCardsPlayer("Mati"));
+
+        // Intenta Juli y tira error al ganar Mati
+        assertThrows(Exception.class, () -> game.play( new NumberedCard("Green",3))); //red2
+
+        // Intenta agarrar Juli y tira error al ganar MAti
+        assertThrows(Exception.class, () -> game.Grab()); //red2
+
     }
 
 

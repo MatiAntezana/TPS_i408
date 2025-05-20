@@ -2,8 +2,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Game {
-    public List<Player> players;
-    public List<Card> deck;
+    private List<Player> players;
+    private List<Card> deck;
     private Card pitCard;
 
     public Game(List<Card> Deck, Integer cantCardsPlayer, String ... ListPlayers) {
@@ -26,26 +26,33 @@ public class Game {
                 .collect(Collectors.toList());
     }
 
+    private void VerifyWin(){
+        if (players.stream().anyMatch(p -> p.getNumberCards() == 0)){
+            throw new IllegalArgumentException("Ya terminó el juego");
+        }
+    }
+
     public Integer getCantCardsPlayer(String playerName) {
         return players.stream().filter(p -> p.getName().equals(playerName)).findFirst().get().getNumberCards();
     }
 
-    public Boolean isPlayerInGame(String playerName) {
+    public boolean isPlayerInGame(String playerName) {
         return players.stream().anyMatch(player -> player.getName().equals(playerName));
     }
 
     public Card getPitCard() { return pitCard; }
 
     public void play(Card cardInHand){
+        VerifyWin();
         if (!pitCard.acceptsCard(cardInHand)) {
             throw new IllegalArgumentException("No puedes jugar esa carta");
         }
         effects(cardInHand);
     }
 
-    private void verifyUnoorWin(Card cardInHand, Player player) {
-        if (player.getNumberCards() == 1) {
-            cardInHand.CheckSayUno(this, player);
+    private void verifyUno(Card cardInHand, Player player) {
+        if (player.getNumberCards() == 1 && !cardInHand.CheckVarUno()) {
+                Draw2Deck(player);
         }
     }
 
@@ -56,15 +63,13 @@ public class Game {
 
 
     public Card Grab(){ //el jugador solo puede jugar la carta que agarro
+        VerifyWin();
         Card cardToGrab = deck.removeFirst();
         Player player = players.removeFirst();
         player.addCard(cardToGrab);
         players.addFirst(player);
         return cardToGrab;
     }
-
-    //carta = game.GrabCard
-    //game.play(carta)
 
     public void playerDraw2Initial(){
         Player ActualPlayer = players.removeFirst();
@@ -85,7 +90,7 @@ public class Game {
     public Player processPlayerTurn(Card CardToPlay){
         Player ActualPlayer = players.removeFirst();
         ActualPlayer.removeCard(CardToPlay);
-        verifyUnoorWin(CardToPlay, ActualPlayer);
+        verifyUno(CardToPlay, ActualPlayer);
         return ActualPlayer;
     }
 
@@ -120,8 +125,6 @@ public class Game {
         pitCard = CardToPlay;
     }
 }
-
-
 
 //public class Game {
 //    private List<Player> players;
