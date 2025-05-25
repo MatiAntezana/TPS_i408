@@ -1,3 +1,5 @@
+package Uno;
+
 import java.util.*;
 
 public class Player {
@@ -14,10 +16,9 @@ public class Player {
     public Integer getNumberCards(){ return hand.size(); }
     public void removeCard(Card cardToRemove) {
         hand.remove(hand.stream()
-                        .filter(card -> card.equalsCard(cardToRemove))
-                        .findFirst()
-                        .get());
+                .filter(card -> card.equalsCard(cardToRemove))
+                .findFirst()
+                .get());
 
     }
-
 }
