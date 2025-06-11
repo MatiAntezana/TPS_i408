@@ -40,14 +40,14 @@ public class UnoTest {
         assertActiveCard( match, red1 );
     }
 
-    @Test void testAFirtsValidDiscardOnSameNumber() {
+    @Test void testAFirstValidDiscardOnSameNumber() {
         Match match = Match.newReducedMatch( deck(), "A", "B" );
         match.play( "A", blue1 );
 
         assertActiveCard( match, blue1 );
     }
 
-    @Test void testAFirtsValidDiscardOnSameColor() {
+    @Test void testAFirstValidDiscardOnSameColor() {
         Match match = Match.newReducedMatch( deck(), "A", "B" );
         match.play( "A", blue1 );
 
