@@ -21,14 +21,11 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 public class UnoServiceTest {
 
-    @Autowired
-    private UnoService unoService;
+    @Autowired private UnoService unoService;
+    @MockBean private Dealer dealer;
 
-    @MockBean
-    private Dealer dealer;
-
-    // Declaramos el mazo predecible como una variable de instancia
     private List<Card> predictableDeck;
+    private List<Card> winningPredictableDeck;
 
     @BeforeEach
     void setUp() {
@@ -46,14 +43,43 @@ public class UnoServiceTest {
                 new NumberCard("Green", 8)   // Una carta más en el mazo de robo
 
         );
+
+        // --- Mazo específico para el test de victoria ---
+        winningPredictableDeck = Arrays.asList(
+                new NumberCard("Red", 0), // 1. Carta Activa Inicial
+
+                // 2. Mano de PlayerA (7 cartas)
+                new NumberCard("Blue", 1),
+                new NumberCard("Green", 2),
+                new NumberCard("Yellow", 3),
+                new NumberCard("Blue", 4),
+                new NumberCard("Green", 5),
+                new NumberCard("Yellow", 3),
+                new NumberCard("Red", 7),
+
+                // 3. Mano de PlayerB (7 cartas)
+                new NumberCard("Blue", 8),
+                //new SkipCard("Green"),
+                new NumberCard("Yellow", 6),
+                new NumberCard("Yellow", 1),
+                new NumberCard("Blue", 2),
+                new NumberCard("Green", 3),
+                new NumberCard("Green", 4),
+                new NumberCard("Yellow", 5),
+
+                // 4. Cartas en el Mazo de Robo
+                new WildCard(),
+                new NumberCard("Red", 8),
+                new NumberCard("Blue", 9)
+        );
+
+        when(dealer.fullDeck()).thenReturn(predictableDeck); // El dealer mock devolverá nuestro mazo predecible
     }
 
 
     // --- Test para newMatch ---
     @Test
-    void newMatch_createsAndStoresNewMatch() {
-        when(dealer.fullDeck()).thenReturn(predictableDeck); // El dealer mock devolverá nuestro mazo predecible
-
+    void createsAndStoresNewMatch() {
         UUID matchId = unoService.newMatch(List.of("PlayerA", "PlayerB"));
 
         assertNotNull(matchId, "El UUID de la partida no debería ser nulo");
@@ -66,9 +92,8 @@ public class UnoServiceTest {
 
 
     @Test
-    void newMatch_createsManyMatchesSimultaneouslyAndStoresThem() {
+    void createsManyMatchesSimultaneouslyAndStoresThem() {
         int numberOfMatchesToCreate = 100;
-        when(dealer.fullDeck()).thenReturn(predictableDeck);
 
         Map<UUID, Match> sessionsMap = unoService.getSessionsForTesting();
         int sessionsMapSize = sessionsMap.size();
@@ -99,7 +124,7 @@ public class UnoServiceTest {
     // --- Test para getMatch ---
     //Esta bien testear esto?
     @Test
-    void getMatch_throwsExceptionWhenMatchNotFound() {
+    void throwsExceptionWhenMatchNotFound() {
         UUID nonExistentMatchId = UUID.randomUUID();
         RuntimeException thrown = assertThrows(RuntimeException.class, () -> unoService.getMatch(nonExistentMatchId));
         assertEquals("Match with ID " + nonExistentMatchId + " not found.", thrown.getMessage());
@@ -107,8 +132,7 @@ public class UnoServiceTest {
 
 
     @Test
-    void getMatch_returnsExistingMatch() {
-        when(dealer.fullDeck()).thenReturn(predictableDeck);
+    void returnsExistingMatch() {
         UUID matchId = unoService.newMatch(List.of("PlayerA", "PlayerB"));
         Match retrievedMatch = unoService.getMatch(matchId);
         assertNotNull(retrievedMatch, "La partida recuperada no debería ser nula.");
@@ -118,9 +142,7 @@ public class UnoServiceTest {
     // --- Tests para métodos que interactúan con una partida existente ---
 
     @Test
-    void playerHand_returnsPlayerHandFromExistingMatch() {
-        when(dealer.fullDeck()).thenReturn(predictableDeck);
-
+    void returnsPlayerHandFromExistingMatch() {
         UUID matchId = unoService.newMatch(List.of("PlayerA", "PlayerB"));
 
         List<Card> hand = unoService.playerHand(matchId);
@@ -142,8 +164,7 @@ public class UnoServiceTest {
 
 
     @Test
-    void getActiveCard_returnsActiveCardFromExistingMatch() {
-        when(dealer.fullDeck()).thenReturn(predictableDeck);
+    void returnsActiveCardFromExistingMatch() {
         UUID matchId = unoService.newMatch(List.of("PlayerA", "PlayerB"));
         Card activeCard = unoService.getActiveCard(matchId);
         assertNotNull(activeCard, "Debería haber una carta activa al inicio de la partida.");
@@ -152,8 +173,7 @@ public class UnoServiceTest {
 
 
     @Test
-    void playCard_delegatesToMatchPlayMethod() {
-        when(dealer.fullDeck()).thenReturn(predictableDeck);
+    void delegatesToMatchPlayMethod() {
         UUID matchId = unoService.newMatch(List.of("PlayerA", "PlayerB"));
 
         Card initialActiveCard = unoService.getActiveCard(matchId);
@@ -174,8 +194,7 @@ public class UnoServiceTest {
     }
 
     @Test
-    void drawCard_delegatesToMatchDrawCardMethod() {
-        when(dealer.fullDeck()).thenReturn(predictableDeck);
+    void delegatesToMatchDrawCardMethod() {
         UUID matchId = unoService.newMatch(List.of("PlayerA", "PlayerB"));
         int initialHandSize = unoService.playerHand(matchId).size(); // Debería ser 7
 
@@ -192,6 +211,54 @@ public class UnoServiceTest {
         // Verificar que no puede robar de nuevo si no es su turno (lógica de Match)
         assertThrows(RuntimeException.class, () -> unoService.drawCard(matchId, "PlayerA"),
                 "PlayerA no debería poder robar dos veces seguidas sin jugar.");
+    }
+
+    @Test
+    void gameEndsWhenPlayerPlaysLastCardAndWins(){
+        when(dealer.fullDeck()).thenReturn(winningPredictableDeck);
+        UUID matchId = unoService.newMatch(List.of("PlayerA", "PlayerB"));
+
+        Card activeCard = unoService.getActiveCard(matchId);
+        assertEquals(new NumberCard("Red", 0), activeCard);
+
+        unoService.drawCard(matchId, "PlayerA");
+        List<Card> currentHand = unoService.playerHand(matchId);
+        assertTrue(currentHand.contains(new WildCard()));
+
+        Card cardToPlay = new WildCard().asBlue();
+        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerA", cardToPlay));
+
+        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerB", new NumberCard("Blue", 8)));
+
+        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerA", new NumberCard("Blue", 1)));
+
+        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerB", new NumberCard("Yellow", 1)));
+
+        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerA", new NumberCard("Yellow", 3)));
+
+        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerB", new NumberCard("Yellow", 5)));
+
+        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerA", new NumberCard("Green", 5)));
+
+        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerB", new NumberCard("Green", 4)));
+
+        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerA", new NumberCard("Blue", 4)));
+
+        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerB", new NumberCard("Blue", 2)));
+
+        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerA", new NumberCard("Green", 2)));
+
+        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerB", new NumberCard("Green", 3).uno()));
+
+        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerA", new NumberCard("Yellow", 3)));
+
+        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerB", new NumberCard("Yellow", 6)));
+
+
+        Match retrievedMatch = unoService.getMatch(matchId); //Lo puedo usar?
+        assertTrue( retrievedMatch.isOver() );
+        assertEquals(new NumberCard("Yellow", 6), unoService.getActiveCard(matchId));
+        assertEquals(0, unoService.playerHand(matchId).size(), "La mano de PlayerB no debería tener cartas.");
     }
 
 
