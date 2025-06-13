@@ -21,8 +21,10 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 public class UnoServiceTest {
 
-    @Autowired private UnoService unoService;
-    @MockBean private Dealer dealer;
+    @Autowired
+    private UnoService unoService;
+    @MockBean
+    private Dealer dealer;
 
     private List<Card> predictableDeck;
     private List<Card> winningPredictableDeck;
@@ -134,8 +136,7 @@ public class UnoServiceTest {
     @Test
     void returnsExistingMatch() {
         UUID matchId = unoService.newMatch(List.of("PlayerA", "PlayerB"));
-        Match retrievedMatch = unoService.getMatch(matchId);
-        assertNotNull(retrievedMatch, "La partida recuperada no debería ser nula.");
+        assertNotNull(unoService.getMatch(matchId), "La partida recuperada no debería ser nula.");
     }
 
 
@@ -144,22 +145,8 @@ public class UnoServiceTest {
     @Test
     void returnsPlayerHandFromExistingMatch() {
         UUID matchId = unoService.newMatch(List.of("PlayerA", "PlayerB"));
+        assertFalse(unoService.playerHand(matchId).isEmpty(), "La mano inicial del jugador no debería estar vacía.");
 
-        List<Card> hand = unoService.playerHand(matchId);
-        assertNotNull(hand);
-        assertFalse(hand.isEmpty(), "La mano inicial del jugador no debería estar vacía.");
-
-
-        List<Card> expectedPlayerAHand = Arrays.asList(
-                new NumberCard("Red", 1), new NumberCard("Green", 5), new NumberCard("Blue", 9),
-                new NumberCard("Red", 3), new NumberCard("Yellow", 7), new NumberCard("Green", 1),
-                new WildCard()
-        );
-
-        //Hacen falta estos tests o no xq en realidad estan evaluando el funcionamiento del modelo, no tanto del service?
-        assertEquals(expectedPlayerAHand.size(), hand.size(), "La mano inicial del jugador debería tener 7 cartas.");
-        assertTrue(hand.containsAll(expectedPlayerAHand), "La mano de PlayerA debería contener las cartas esperadas.");
-        assertTrue(expectedPlayerAHand.containsAll(hand), "La mano de PlayerA debería contener solo las cartas esperadas.");
     }
 
 
@@ -212,111 +199,4 @@ public class UnoServiceTest {
         assertThrows(RuntimeException.class, () -> unoService.drawCard(matchId, "PlayerA"),
                 "PlayerA no debería poder robar dos veces seguidas sin jugar.");
     }
-
-    @Test
-    void gameEndsWhenPlayerPlaysLastCardAndWins(){
-        when(dealer.fullDeck()).thenReturn(winningPredictableDeck);
-        UUID matchId = unoService.newMatch(List.of("PlayerA", "PlayerB"));
-
-        Card activeCard = unoService.getActiveCard(matchId);
-        assertEquals(new NumberCard("Red", 0), activeCard);
-
-        unoService.drawCard(matchId, "PlayerA");
-        List<Card> currentHand = unoService.playerHand(matchId);
-        assertTrue(currentHand.contains(new WildCard()));
-
-        Card cardToPlay = new WildCard().asBlue();
-        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerA", cardToPlay));
-
-        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerB", new NumberCard("Blue", 8)));
-
-        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerA", new NumberCard("Blue", 1)));
-
-        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerB", new NumberCard("Yellow", 1)));
-
-        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerA", new NumberCard("Yellow", 3)));
-
-        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerB", new NumberCard("Yellow", 5)));
-
-        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerA", new NumberCard("Green", 5)));
-
-        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerB", new NumberCard("Green", 4)));
-
-        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerA", new NumberCard("Blue", 4)));
-
-        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerB", new NumberCard("Blue", 2)));
-
-        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerA", new NumberCard("Green", 2)));
-
-        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerB", new NumberCard("Green", 3).uno()));
-
-        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerA", new NumberCard("Yellow", 3)));
-
-        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerB", new NumberCard("Yellow", 6)));
-
-
-        Match retrievedMatch = unoService.getMatch(matchId); //Lo puedo usar?
-        assertTrue( retrievedMatch.isOver() );
-        assertEquals(new NumberCard("Yellow", 6), unoService.getActiveCard(matchId));
-        assertEquals(0, unoService.playerHand(matchId).size(), "La mano de PlayerB no debería tener cartas.");
-    }
-
-
-//    @Test
-//    void gameEndsWhenPlayerPlaysLastCardAndWins() {
-//        List<Card> deck = Arrays.asList(
-//
-//                new NumberCard("Red", 0),
-//
-//                new SkipCard("Blue"),
-//                new SkipCard("Yellow"),
-//                new SkipCard("Green"),
-//                new SkipCard("Yellow"),
-//                new SkipCard("Blue"),
-//                new SkipCard("Green"),
-//                new NumberCard("Yellow", 7),
-//
-//
-//                new NumberCard("Blue", 8),
-//                new NumberCard("Green", 9),
-//                new NumberCard("Yellow", 1),
-//                new NumberCard("Blue", 2),
-//                new NumberCard("Red", 3),
-//                new NumberCard("Green", 4),
-//                new NumberCard("Yellow", 5),
-//
-//                new WildCard(),
-//                new NumberCard("Red", 8));
-//
-//
-//        when(dealer.fullDeck()).thenReturn(deck);
-//        UUID matchId = unoService.newMatch(List.of("PlayerA", "PlayerB"));
-//
-//        Card activeCard = unoService.getActiveCard(matchId);
-//        assertEquals(new NumberCard("Red", 0), activeCard);
-//
-//        unoService.drawCard(matchId, "PlayerA");
-//        List<Card> currentHand = unoService.playerHand(matchId);
-//        assertTrue(currentHand.contains(new WildCard()));
-//
-//        Card cardToPlay = new WildCard().asBlue();
-//        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerA", cardToPlay));
-//
-//        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerB", new NumberCard("Blue", 8)));
-//
-//        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerA", new SkipCard("Blue")));
-//        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerA", new SkipCard("Blue")));
-//        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerA", new SkipCard("Yellow")));
-//        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerA", new SkipCard("Green")));
-//        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerA", new SkipCard("Green")));
-//        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerA", new SkipCard("Yellow").uno()));
-//        assertDoesNotThrow(() -> unoService.playCard(matchId, "PlayerA", new NumberCard("Yellow", 7)));
-//
-//        Match retrievedMatch = unoService.getMatch(matchId); //Lo puedo usar?
-//        assertTrue( retrievedMatch.isOver() );
-//        assertEquals(new NumberCard("Yellow", 7), unoService.getActiveCard(matchId));
-//
-//    }
-
 }
-

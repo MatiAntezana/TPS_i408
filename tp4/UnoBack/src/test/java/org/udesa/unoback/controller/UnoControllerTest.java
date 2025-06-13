@@ -271,6 +271,7 @@ public class UnoControllerTest {
         assertFalse(playerAHandAfterPlay.contains(cardToPlay), "La carta jugada no debe estar en la mano.");
     }
 
+
     @Test
     public void test06PlayCardFailsIfPlayerDoesNotHaveCard() throws Exception {
         UUID matchId = createMatch("PlayerA", "PlayerB");

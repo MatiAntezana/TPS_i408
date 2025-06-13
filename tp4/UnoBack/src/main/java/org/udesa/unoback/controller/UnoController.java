@@ -10,7 +10,7 @@ import java.util.UUID;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RestController //RestController o Controller, xq yo tengo anotado que hay que usar Controller
+@RestController
 public class UnoController {
     @Autowired private UnoService unoService;
 
