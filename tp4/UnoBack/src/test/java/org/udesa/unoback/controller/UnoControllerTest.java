@@ -119,7 +119,7 @@ public class UnoControllerTest {
     // Intenta crear una partida que falla y espera un error del servidor
     public void createMatchFailing(String... players) throws Exception {
         // Esto solo fallará si el UnoService real lanza una RuntimeException que el Controller atrapa.
-        // Ej: si le pasas menos de 2 jugadores y tu Match lo valida.
+        // Ej: si le pasas menos de 2 jugadores y tu Match lo valida. --> Revisar esto en el modelo que no esta hecho.
         String playersParam = String.join(",", players);
         mockMvc.perform(post("/newmatch")
                         .param("players", playersParam))
@@ -273,19 +273,7 @@ public class UnoControllerTest {
 
 
     @Test
-    public void test06PlayCardFailsIfPlayerDoesNotHaveCard() throws Exception {
-        UUID matchId = createMatch("PlayerA", "PlayerB");
-
-        // El UnoService lanzará la excepción "Not a card in hand"
-        // PlayerA tiene: [Blue 1, Green 2, Yellow 3, Blue 4, Green 5, Yellow 6, Red 7]
-        JsonCard nonExistentCard = new NumberCard("Black", 99).asJson();
-        playCardFailing(matchId, "PlayerA", nonExistentCard);
-    }
-
-
-
-    @Test
-    public void test07GameEndsWhenPlayerPlaysLastCardAndWins() throws Exception {
+    public void test06GameEndsWhenPlayerPlaysLastCardAndWins() throws Exception {
         when(dealer.fullDeck()).thenReturn(winningPredictableDeck);
         UUID matchId = createMatch("PlayerA", "PlayerB");
 
@@ -343,7 +331,78 @@ public class UnoControllerTest {
     }
 
 
+
+//    @Test
+//    public void test07GameEndsWhenPlayerPlaysLastCardAndWins() throws Exception {
+//        when(dealer.fullDeck()).thenReturn(winningPredictableDeck);
+//        UUID matchId = createMatch("PlayerA", "PlayerB");
+//
+//        // 1. PlayerA roba una WildCard
+//        drawCard(matchId, "PlayerA"); // P-A tiene 8 cartas
+//
+//        // 2. PlayerA juega la WildCard, asignando color AZUL
+//        JsonCard playedWildCard = new WildCard().asBlue().asJson();
+//        playCard(matchId, "PlayerA", playedWildCard);
+//
+//        // 3. PlayerB juega Blue 8
+//        JsonCard playerBBlue8 = new NumberCard("Blue", 8).asJson();
+//        playCard(matchId, "PlayerB", playerBBlue8);
+//
+//        // 4. PlayerA juega Blue 1
+//        JsonCard playerABlue1 = new NumberCard("Blue", 1).asJson();
+//        playCard(matchId, "PlayerA", playerABlue1);
+//
+//        JsonCard playerBYellow1 = new NumberCard("Yellow", 1).asJson();
+//        playCard(matchId, "PlayerB", playerBYellow1);
+//
+//        JsonCard playerAYellow3 = new NumberCard("Yellow", 3).asJson();
+//        playCard(matchId, "PlayerA", playerAYellow3);
+//
+//        JsonCard playerBYellow5 = new NumberCard("Yellow", 5).asJson();
+//        playCard(matchId, "PlayerB", playerBYellow5);
+//
+//        JsonCard playerAGreen5 = new NumberCard("Green", 5).asJson();
+//        playCard(matchId, "PlayerA", playerAGreen5);
+//
+//        JsonCard playerBGreen4 = new NumberCard("Green", 4).asJson();
+//        playCard(matchId, "PlayerB", playerBGreen4);
+//
+//        JsonCard playerABlue4 = new NumberCard("Blue", 4).asJson();
+//        playCard(matchId, "PlayerA", playerABlue4);
+//
+//        JsonCard playerBBlue2 = new NumberCard("Blue", 2).asJson();
+//        playCard(matchId, "PlayerB", playerBBlue2);
+//
+//        JsonCard playerAGreen2 = new NumberCard("Green", 2).asJson();
+//        playCard(matchId, "PlayerA", playerAGreen2);
+//
+//        JsonCard playerBSkipCardGreen = new SkipCard("Green").asJson();
+//        playCard(matchId, "PlayerB", playerBSkipCardGreen);
+//
+//        JsonCard playerBGreen3 = new NumberCard("Green", 3).asJson();
+//        playCard(matchId, "PlayerB", playerBGreen3);
+//
+//
+//        List<JsonCard> finalPlayerAHand = getPlayerHand(matchId);
+//        assertEquals(2, finalPlayerAHand.size(), "La mano de PlayerA debería tener dos cartas.");
+//
+//        // Como no tenemos endpoints para isGameOver/winner en el Controller, no podemos verificar eso directamente desde la API.
+//        // Tampoco puedo llamar desde aca a uno()?
+//    }
+
+
     // --- Tests para el manejo de errores (ej. partida no encontrada) ---
+
+    @Test
+    public void test07PlayCardFailsIfPlayerDoesNotHaveCard() throws Exception {
+        UUID matchId = createMatch("PlayerA", "PlayerB");
+
+        // El UnoService lanzará la excepción "Not a card in hand"
+        // PlayerA tiene: [Blue 1, Green 2, Yellow 3, Blue 4, Green 5, Yellow 6, Red 7]
+        JsonCard nonExistentCard = new NumberCard("Black", 99).asJson();
+        playCardFailing(matchId, "PlayerA", nonExistentCard);
+    }
+
 
     @Test
     public void test08NewMatchWithInsufficientPlayersFails() throws Exception {
@@ -372,5 +431,10 @@ public class UnoControllerTest {
         mockMvc.perform(post("/draw/" + invalidId + "/PlayerA"))
                 .andDo(print())
                 .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    public void test12PlayWrongTurnTest() throws Exception {
+        UUID matchId = createMatch("PlayerA", "PlayerB");
     }
 }
