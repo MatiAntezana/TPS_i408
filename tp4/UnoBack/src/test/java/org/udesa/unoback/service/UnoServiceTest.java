@@ -7,7 +7,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.udesa.unoback.model.*;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +26,6 @@ public class UnoServiceTest {
     private Dealer dealer;
 
     private List<Card> predictableDeck;
-    private List<Card> winningPredictableDeck;
 
     @BeforeEach
     void setUp() {
@@ -44,35 +42,6 @@ public class UnoServiceTest {
 
                 new NumberCard("Green", 8)   // Una carta más en el mazo de robo
 
-        );
-
-        // --- Mazo específico para el test de victoria ---
-        winningPredictableDeck = Arrays.asList(
-                new NumberCard("Red", 0), // 1. Carta Activa Inicial
-
-                // 2. Mano de PlayerA (7 cartas)
-                new NumberCard("Blue", 1),
-                new NumberCard("Green", 2),
-                new NumberCard("Yellow", 3),
-                new NumberCard("Blue", 4),
-                new NumberCard("Green", 5),
-                new NumberCard("Yellow", 3),
-                new NumberCard("Red", 7),
-
-                // 3. Mano de PlayerB (7 cartas)
-                new NumberCard("Blue", 8),
-                //new SkipCard("Green"),
-                new NumberCard("Yellow", 6),
-                new NumberCard("Yellow", 1),
-                new NumberCard("Blue", 2),
-                new NumberCard("Green", 3),
-                new NumberCard("Green", 4),
-                new NumberCard("Yellow", 5),
-
-                // 4. Cartas en el Mazo de Robo
-                new WildCard(),
-                new NumberCard("Red", 8),
-                new NumberCard("Blue", 9)
         );
 
         when(dealer.fullDeck()).thenReturn(predictableDeck); // El dealer mock devolverá nuestro mazo predecible
@@ -124,7 +93,6 @@ public class UnoServiceTest {
 
 
     // --- Test para getMatch ---
-    //Esta bien testear esto?
     @Test
     void throwsExceptionWhenMatchNotFound() {
         UUID nonExistentMatchId = UUID.randomUUID();

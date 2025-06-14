@@ -1,12 +1,18 @@
 package org.udesa.unoback.model;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public abstract class ColoredCard extends Card {
     protected String color = "";
+    protected List<String> validColors = new ArrayList<>(Arrays.asList("Red", "Blue", "Green", "Yellow"));
+    public static String NotValidColor = "Not a valid color";
 
     public ColoredCard( String aColor ) {
-        color = aColor;
+        if(!validColors.contains(aColor)) { throw new IllegalArgumentException(NotValidColor); }
+        this.color = aColor;
     }
     public boolean acceptsOnTop( Card aCard ) { return  aCard.yourColorIs( color() );   }
     public boolean yourColorIs( String aColor ) { return color.equals( aColor );  }

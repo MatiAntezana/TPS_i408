@@ -7,6 +7,9 @@ import java.util.function.Function;
 public class Match {
     public static String NotACardInHand = "Not a card in hand of ";
     public static String CardDoNotMatch = "Card does not match Color, Number or Kind";
+    public static String NotEnoughPlayers = "Not enough players";
+
+
     private Function<GameStatus, GameStatus> reverseShift;
     private Function<GameStatus, GameStatus> nextShift;
     private GameStatus status;
@@ -17,6 +20,7 @@ public class Match {
         return new Match( new ArrayList( deck ), 5, List.of( players ) );
     }
     public static Match fullMatch( List<Card> deck, List<String> players ) {
+        if (players.size() < 2){ throw new RuntimeException( NotEnoughPlayers ); };
         return new Match( new ArrayList( deck ), 7, players );
     }
 

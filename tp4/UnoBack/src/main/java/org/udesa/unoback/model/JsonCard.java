@@ -3,12 +3,17 @@ package org.udesa.unoback.model;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 @Getter
 public class JsonCard {
     String color;
     Integer number;
     String type;
     boolean shout;
+
 
     public JsonCard() {}
     public JsonCard( String color, Integer number, String type, boolean shout ) {

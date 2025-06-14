@@ -1,5 +1,6 @@
 package org.udesa.unoback.controller;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.udesa.unoback.model.Card;
@@ -14,11 +15,18 @@ import java.util.stream.Collectors;
 public class UnoController {
     @Autowired private UnoService unoService;
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<String> handleIllegalArgument(RuntimeException ex) {
-        return ResponseEntity.internalServerError().body( ex.getMessage());
+    @ExceptionHandler(IllegalArgumentException.class) public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error Ilegal Argument"+ex.getMessage());
     }
 
+//    @ExceptionHandler(RuntimeException.class)
+//    public ResponseEntity<String> handleIllegalArgument(RuntimeException ex) {
+//        return ResponseEntity.internalServerError().body( ex.getMessage());
+//    }
+
+    @ExceptionHandler(RuntimeException.class) public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error RunTime "+ex.getMessage());
+    }
 
     @PostMapping("newmatch")
     public ResponseEntity newMatch(@RequestParam List<String> players) {
