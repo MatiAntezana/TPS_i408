@@ -19,10 +19,6 @@ public class UnoController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error Ilegal Argument"+ex.getMessage());
     }
 
-//    @ExceptionHandler(RuntimeException.class)
-//    public ResponseEntity<String> handleIllegalArgument(RuntimeException ex) {
-//        return ResponseEntity.internalServerError().body( ex.getMessage());
-//    }
 
     @ExceptionHandler(RuntimeException.class) public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error RunTime "+ex.getMessage());

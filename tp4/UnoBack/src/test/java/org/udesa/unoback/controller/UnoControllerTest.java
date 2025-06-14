@@ -10,16 +10,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.RequestBuilder;
 import org.udesa.unoback.model.*;
 import org.udesa.unoback.service.Dealer;
 import org.udesa.unoback.service.UnoService;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -70,181 +68,6 @@ public class UnoControllerTest {
         when(dealer.fullDeck()).thenReturn(predictableDeck);
     }
 
-    // --- Métodos auxiliares para simular llamadas al controlador ---
-
-    // Métodos utilitarios genéricos
-
-    private String performGetAndExpectOk(String url) throws Exception {
-        return mockMvc.perform(get(url))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-    }
-
-    private String performPostAndExpectStatus(String url, String jsonContent, int expectedStatus) throws Exception {
-        return mockMvc.perform(post(url)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonContent))
-                .andDo(print())
-                .andExpect(status().is(expectedStatus))
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-    }
-
-    private void performPostWithoutBody(String url, int expectedStatus) throws Exception {
-        mockMvc.perform(post(url))
-                .andDo(print())
-                .andExpect(status().is(expectedStatus));
-    }
-
-    private void performPostWithParams(String url, String paramName, String paramValue, int expectedStatus) throws Exception {
-        mockMvc.perform(post(url).param(paramName, paramValue))
-                .andDo(print())
-                .andExpect(status().is(expectedStatus));
-    }
-
-
-    public UUID createMatch(String... players) throws Exception {
-        String playersParam = String.join(",", players);
-        String response = mockMvc.perform(post("/newmatch").param("players", playersParam))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
-        return UUID.fromString(response.replace("\"", ""));
-    }
-
-    public void createMatchFailing(String... players) throws Exception {
-        String playersParam = String.join(",", players);
-        performPostWithParams("/newmatch", "players", playersParam, 404);
-    }
-
-    public JsonCard getActiveCard(UUID matchId) throws Exception {
-        String response = performGetAndExpectOk("/activecard/" + matchId);
-        return objectMapper.readValue(response, JsonCard.class);
-    }
-
-    public List<JsonCard> getPlayerHand(UUID matchId) throws Exception {
-        String response = performGetAndExpectOk("/playerhand/" + matchId);
-        return objectMapper.readValue(response, new TypeReference<List<JsonCard>>() {});
-    }
-
-    public void drawCard(UUID matchId, String player) throws Exception {
-        performPostWithoutBody("/draw/" + matchId + "/" + player, 200);
-    }
-
-    public void playCard(UUID matchId, String player, JsonCard card) throws Exception {
-        String json = objectMapper.writeValueAsString(card);
-        performPostAndExpectStatus("/play/" + matchId + "/" + player, json, 200);
-    }
-
-    public void playCardFailingRunTimeException(UUID matchId, String player, JsonCard card) throws Exception {
-        String json = objectMapper.writeValueAsString(card);
-        performPostAndExpectStatus("/play/" + matchId + "/" + player, json, 404);
-    }
-
-    public void playCardFailingIllegalArgument(UUID matchId, String player, JsonCard card) throws Exception {
-        String json = objectMapper.writeValueAsString(card);
-        performPostAndExpectStatus("/play/" + matchId + "/" + player, json, 400);
-    }
-
-
-    private void failsDueToInvalidId(String url, UUID invalidId) throws Exception {
-        mockMvc.perform(get(url + invalidId))
-                .andDo(print())
-                .andExpect(status().isNotFound());
-    }
-
-//    // Crea una partida y devuelve su UUID
-//    public UUID createMatch(String... players) throws Exception {
-//        String playersParam = String.join(",", players);
-//        String responseContent = mockMvc.perform(post("/newmatch")
-//                        .param("players", playersParam))
-//                .andDo(print())
-//                .andExpect(status().isOk())
-//                .andReturn()
-//                .getResponse()
-//                .getContentAsString();
-//        return UUID.fromString(responseContent.replace("\"", ""));
-//    }
-//
-//    // Intenta crear una partida que falla y espera un error del servidor
-//    public void createMatchFailing(String... players) throws Exception {
-//        String playersParam = String.join(",", players);
-//        mockMvc.perform(post("/newmatch")
-//                        .param("players", playersParam))
-//                .andDo(print())
-//                .andExpect(status().isNotFound());
-//    }
-//
-//    // Obtiene la carta activa del juego
-//    public JsonCard getActiveCard(UUID matchId) throws Exception {
-//        String responseContent = mockMvc.perform(get("/activecard/" + matchId))
-//                .andDo(print())
-//                .andExpect(status().isOk())
-//                .andReturn()
-//                .getResponse()
-//                .getContentAsString();
-//        return objectMapper.readValue(responseContent, JsonCard.class);
-//    }
-//
-//
-//    // Obtiene la mano del jugador actual
-//    public List<JsonCard> getPlayerHand(UUID matchId) throws Exception {
-//        String responseContent = mockMvc.perform(get("/playerhand/" + matchId))
-//                .andDo(print())
-//                .andExpect(status().isOk())
-//                .andReturn()
-//                .getResponse()
-//                .getContentAsString();
-//        return objectMapper.readValue(responseContent, new TypeReference<List<JsonCard>>() {});
-//    }
-//
-//    // Realiza la acción de robar una carta
-//    public void drawCard(UUID matchId, String player) throws Exception {
-//        mockMvc.perform(post("/draw/" + matchId + "/" + player))
-//                .andDo(print())
-//                .andExpect(status().isOk());
-//    }
-//
-//    // Realiza la acción de jugar una carta (recibe JsonCard)
-//    public void playCard(UUID matchId, String player, JsonCard card) throws Exception {
-//        String jsonContent = objectMapper.writeValueAsString(card); // Convierte JsonCard a String JSON
-//        mockMvc.perform(post("/play/" + matchId + "/" + player)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(jsonContent))
-//                .andDo(print())
-//                .andExpect(status().isOk());
-//    }
-//
-//    // Intenta jugar una carta que debería fallar
-//    public void playCardFailingRunTimeException(UUID matchId, String player, JsonCard card) throws Exception {
-//        String jsonContent = objectMapper.writeValueAsString(card);
-//        mockMvc.perform(post("/play/" + matchId + "/" + player)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(jsonContent))
-//                .andDo(print())
-//                .andExpect(status().isNotFound());
-//    }
-//
-//    public void playCardFailingIllegalArgument(UUID matchId, String player, JsonCard card) throws Exception {
-//        String jsonContent = objectMapper.writeValueAsString(card);
-//        mockMvc.perform(post("/play/" + matchId + "/" + player)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(jsonContent))
-//                .andDo(print())
-//                .andExpect(status().isBadRequest());
-//    }
-//
-//
-//    private void failsDueToInvalidId(String url, UUID invalidId) throws Exception {
-//        mockMvc.perform(get(url + invalidId))
-//                .andDo(print())
-//                .andExpect(status().isNotFound());
-//    }
-
     @Test
     public void newMatchCreatesGame() throws Exception {
         createMatch("PlayerA", "PlayerB");
@@ -289,7 +112,6 @@ public class UnoControllerTest {
     public void newMatchWithInsufficientPlayersFails() throws Exception {
         createMatchFailing("PlayerA");
     }
-
 
     @Test
     public void newMatchWithNonePlayersFails() throws Exception {
@@ -339,5 +161,77 @@ public class UnoControllerTest {
     @Test
     public void playWithNoCardsFails() throws Exception {
         playCardFailingRunTimeException(createMatch("PlayerA", "PlayerB"), "PlayerA", null);
+    }
+
+
+    // --- Métodos auxiliares para simular llamadas al controlador ---
+
+    private String performAndExpectStatus(RequestBuilder requestBuilder, int expectedStatus) throws Exception {
+        return mockMvc.perform(requestBuilder)
+                .andDo(print())
+                .andExpect(status().is(expectedStatus))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+    }
+
+
+    private void performWithoutBody(RequestBuilder requestBuilder, int expectedStatus) throws Exception {
+        mockMvc.perform(requestBuilder)
+                .andDo(print())
+                .andExpect(status().is(expectedStatus));
+    }
+
+
+    public UUID createMatch(String... players) throws Exception {
+        String playersParam = String.join(",", players);
+        String response = performAndExpectStatus(post("/newmatch").param("players", playersParam), 200);
+        return UUID.fromString(response.replace("\"", ""));
+    }
+
+
+    public void createMatchFailing(String... players) throws Exception {
+        String playersParam = String.join(",", players);
+        performWithoutBody(post("/newmatch").param("players", playersParam), 404);
+    }
+
+
+    public JsonCard getActiveCard(UUID matchId) throws Exception {
+        String response = performAndExpectStatus(get("/activecard/" + matchId), 200);
+        return objectMapper.readValue(response, JsonCard.class);
+    }
+
+
+    public List<JsonCard> getPlayerHand(UUID matchId) throws Exception {
+        String response = performAndExpectStatus(get("/playerhand/" + matchId), 200);
+        return objectMapper.readValue(response, new TypeReference<List<JsonCard>>() {});
+    }
+
+
+    public void drawCard(UUID matchId, String player) throws Exception {
+        performWithoutBody(post("/draw/" + matchId + "/" + player), 200);
+    }
+
+
+    public void playCard(UUID matchId, String player, JsonCard card) throws Exception {
+        String json = objectMapper.writeValueAsString(card);
+        performAndExpectStatus(post("/play/" + matchId + "/" + player, json).contentType(MediaType.APPLICATION_JSON).content(json), 200);
+    }
+
+
+    public void playCardFailingRunTimeException(UUID matchId, String player, JsonCard card) throws Exception {
+        String json = objectMapper.writeValueAsString(card);
+        performAndExpectStatus(post("/play/" + matchId + "/" + player, json).contentType(MediaType.APPLICATION_JSON).content(json), 404);
+    }
+
+
+    public void playCardFailingIllegalArgument(UUID matchId, String player, JsonCard card) throws Exception {
+        String json = objectMapper.writeValueAsString(card);
+        performAndExpectStatus(post("/play/" + matchId + "/" + player, json).contentType(MediaType.APPLICATION_JSON).content(json), 400);
+    }
+
+
+    private void failsDueToInvalidId(String url, UUID invalidId) throws Exception {
+        performWithoutBody(get(url + invalidId), 404);
     }
 }
