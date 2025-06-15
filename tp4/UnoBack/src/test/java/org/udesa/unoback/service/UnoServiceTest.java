@@ -54,6 +54,74 @@ public class UnoServiceTest {
 
 
     @Test
+    void createsManyMatchesSimultaneouslyAndGetActiveCard(){
+        UUID matchId1 = unoService.newMatch(List.of("PlayerA", "PlayerB"));
+
+        UUID matchId2 = unoService.newMatch(List.of("PlayerA", "PlayerB"));
+
+        UUID matchId3 = unoService.newMatch(List.of("PlayerA", "PlayerB"));
+
+        // Verificar que se puede getActiveCard en multiples partidas en simultaneo
+        assertDoesNotThrow(() -> unoService.getActiveCard(matchId1), "Debería haber una carta activa al inicio de la partida");
+        assertDoesNotThrow(() -> unoService.getActiveCard(matchId2), "Debería haber una carta activa al inicio de la partida");
+        assertDoesNotThrow(() -> unoService.getActiveCard(matchId3), "Debería haber una carta activa al inicio de la partida");
+
+    }
+
+    @Test
+    void createsManyMatchesSimultaneouslyAndDrawCard(){
+        UUID matchId1 = unoService.newMatch(List.of("PlayerA", "PlayerB"));
+
+        UUID matchId2 = unoService.newMatch(List.of("PlayerA", "PlayerB"));
+
+        UUID matchId3 = unoService.newMatch(List.of("PlayerA", "PlayerB"));
+
+        // Verificar que se pueda hacer drawCard en multiples partidas en simultaneo
+        assertDoesNotThrow(() -> unoService.drawCard(matchId1, "PlayerA"), "PlayerA deberia poder robar 2 cartas");
+        assertDoesNotThrow(() -> unoService.drawCard(matchId2, "PlayerA"), "PlayerA deberia poder robar 2 cartas");
+        assertDoesNotThrow(() -> unoService.drawCard(matchId3, "PlayerA"), "PlayerA deberia poder robar 2 cartas");
+
+    }
+
+    @Test
+    void createsManyMatchesSimultaneouslyAndPlayerHand(){
+        UUID matchId1 = unoService.newMatch(List.of("PlayerA", "PlayerB"));
+
+        UUID matchId2 = unoService.newMatch(List.of("PlayerA", "PlayerB"));
+
+        UUID matchId3 = unoService.newMatch(List.of("PlayerA", "PlayerB"));
+
+        // Verificar que se pueda hacer playerHand en multiples partidas en simultaneo
+        assertDoesNotThrow(() -> unoService.playerHand(matchId1), "Se deberia poder obtener el mazo del jugador");
+        assertDoesNotThrow(() -> unoService.playerHand(matchId2), "Se deberia poder obtener el mazo del jugador");
+        assertDoesNotThrow(() -> unoService.playerHand(matchId3), "Se deberia poder obtener el mazo del jugador");
+    }
+
+    @Test
+    void createsManyMatchesSimultaneouslyAndPlayCard(){
+        UUID matchId1 = unoService.newMatch(List.of("PlayerA", "PlayerB"));
+
+        UUID matchId2 = unoService.newMatch(List.of("PlayerA", "PlayerB"));
+
+        UUID matchId3 = unoService.newMatch(List.of("PlayerA", "PlayerB"));
+
+        // Verificar que se pueda hacer play en multiples partidas en simultaneo
+        assertDoesNotThrow(()->unoService.playCard(matchId1, "PlayerA", new WildCard().asBlue()), "PlayerA debería poder jugar una WildCard");
+        assertDoesNotThrow(()->unoService.playCard(matchId2, "PlayerA", new WildCard().asBlue()), "PlayerA debería poder jugar una WildCard");
+
+        // Juego de nuevo en con un juego anterior
+        assertDoesNotThrow(() -> unoService.playCard(matchId1, "PlayerB", new NumberCard("Blue", 1)), "PlayerB debería poder jugar una Blue NumberedCard sobre una Blue WildCard.");
+
+        assertDoesNotThrow(()->unoService.playCard(matchId3, "PlayerA", new WildCard().asBlue()), "PlayerA debería poder jugar una WildCard");
+
+        assertDoesNotThrow(() -> unoService.playCard(matchId2, "PlayerB", new NumberCard("Blue", 1)), "PlayerB debería poder jugar una Blue NumberedCard sobre una Blue WildCard.");
+
+        assertDoesNotThrow(() -> unoService.playCard(matchId3, "PlayerB", new NumberCard("Blue", 1)), "PlayerB debería poder jugar una Blue NumberedCard sobre una Blue WildCard.");
+
+    }
+
+
+    @Test
     void createsManyMatchesSimultaneouslyAndStoresAndPlayThem() {
         Map<UUID, Match> sessionsMap = unoService.getSessionsForTesting();
 
@@ -84,35 +152,6 @@ public class UnoServiceTest {
 
         // Verificar que los UUIDs generados son únicos entre sí
         assertEquals(3, new ArrayList<>(Arrays.asList(matchId1, matchId2, matchId3)).stream().distinct().count(), "Todos los IDs de las partidas creadas deberían ser únicos.");
-
-        // Verificar que se pueda hacer play en multiples partidas en simultaneo
-        assertDoesNotThrow(()->unoService.playCard(matchId1, "PlayerA", new WildCard().asBlue()), "PlayerA debería poder jugar una WildCard");
-        assertDoesNotThrow(()->unoService.playCard(matchId2, "PlayerA", new WildCard().asBlue()), "PlayerA debería poder jugar una WildCard");
-
-        // Juego de nuevo en con un juego anterior
-        assertDoesNotThrow(() -> unoService.playCard(matchId1, "PlayerB", new NumberCard("Blue", 1)), "PlayerB debería poder jugar una Blue NumberedCard sobre una Blue WildCard.");
-
-        assertDoesNotThrow(()->unoService.playCard(matchId3, "PlayerA", new WildCard().asBlue()), "PlayerA debería poder jugar una WildCard");
-
-        assertDoesNotThrow(() -> unoService.playCard(matchId2, "PlayerB", new NumberCard("Blue", 1)), "PlayerB debería poder jugar una Blue NumberedCard sobre una Blue WildCard.");
-
-        assertDoesNotThrow(() -> unoService.playCard(matchId3, "PlayerB", new NumberCard("Blue", 1)), "PlayerB debería poder jugar una Blue NumberedCard sobre una Blue WildCard.");
-
-        // Verificar que se pueda hacer playerHand en multiples partidas en simultaneo
-        assertDoesNotThrow(() -> unoService.playerHand(matchId1), "Se deberia poder obtener la Hand del jugador");
-        assertDoesNotThrow(() -> unoService.playerHand(matchId2), "Se deberia poder obtener la Hand del jugador");
-        assertDoesNotThrow(() -> unoService.playerHand(matchId3), "Se deberia poder obtener la Hand del jugador");
-
-        // Verificar que se pueda hacer drawCard en multiples partidas en simultaneo
-        assertDoesNotThrow(() -> unoService.drawCard(matchId1, "PlayerA"), "PlayerA deberia poder robar 2 cartas");
-        assertDoesNotThrow(() -> unoService.drawCard(matchId2, "PlayerA"), "PlayerA deberia poder robar 2 cartas");
-        assertDoesNotThrow(() -> unoService.drawCard(matchId3, "PlayerA"), "PlayerA deberia poder robar 2 cartas");
-
-        // Verificar que se puede getActiveCard en multiples partidas en simultaneo
-        assertDoesNotThrow(() -> unoService.getActiveCard(matchId1), "Debería haber una carta activa al inicio de la partida");
-        assertDoesNotThrow(() -> unoService.getActiveCard(matchId2), "Debería haber una carta activa al inicio de la partida");
-        assertDoesNotThrow(() -> unoService.getActiveCard(matchId3), "Debería haber una carta activa al inicio de la partida");
-
     }
 
 
